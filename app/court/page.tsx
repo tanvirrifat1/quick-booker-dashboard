@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const courts = [
   {
@@ -58,12 +59,14 @@ export default function CourtPage() {
   return (
     <div>
       <div className="flex justify-end items-center space-x-4 mb-8 mr-5">
-        <button
-          type="button"
-          className="px-8 py-2 font-semibold rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white shadow-lg hover:from-blue-700 hover:via-blue-600 hover:to-teal-500 transition-all duration-300"
-        >
-          create
-        </button>
+        <Link href="/createCourt">
+          <button
+            type="button"
+            className="px-8 py-2 font-semibold rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white shadow-lg hover:from-blue-700 hover:via-blue-600 hover:to-teal-500 transition-all duration-300"
+          >
+            create
+          </button>
+        </Link>
       </div>
       <div>
         <div className="w-full max-w-8xl mx-auto p-4">
