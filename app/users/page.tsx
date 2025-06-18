@@ -11,23 +11,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import UserDetailsModal from "@/components/user-details-modal";
-import {
-  useGetAllUsersQuery,
-  useGetUserByIdQuery,
-} from "@/redux/feature/userAPI";
 import DetailRow from "@/components/DetailRow";
-
-interface IUser {
-  id: number;
-  full_name: string;
-  email: string;
-  created_on: string;
-}
 
 export default function DashboardContent() {
   return (
-    <main className='bg-background2 w-full p-4 md:p-6'>
+    <main className="bg-background2 w-full p-4 md:p-6">
       <section>
         <TransactionTable />
       </section>
@@ -39,8 +27,7 @@ function TransactionTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // Configurable items per page
-  const { data: users, isLoading } = useGetAllUsersQuery({});
+  const [itemsPerPage] = useState(10);
 
   const transactions = [
     {
@@ -129,7 +116,6 @@ function TransactionTable() {
     },
   ];
 
-  // Calculate pagination
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -148,53 +134,55 @@ function TransactionTable() {
 
   return (
     <>
-      <div className='overflow-hidden bg-[#FFF] rounded-md'>
-        <h2 className='text-[32px] font-medium text-primary py-6 px-3'>User List</h2>
-        <div className='overflow-x-auto'>
+      <div className="overflow-hidden bg-white rounded-md">
+        <h2 className="text-[32px] font-medium text-primary py-6 px-3">
+          User List
+        </h2>
+        <div className="overflow-x-auto">
           <Table>
-            <TableHeader className='bg-[#0249E1] hover:!bg-[#5ce1e6d5] text-[#FFF] py-8'>
-              <TableRow className='py-8'>
-                <TableHead className='text-[#FFF] text-lg text-center'>
+            <TableHeader className="bg-[#0249E1] hover:!bg-[#5ce1e6d5] text-[#FFF] py-8">
+              <TableRow>
+                <TableHead className="text-[#FFF] text-lg text-center">
                   #Tr.ID
                 </TableHead>
-                <TableHead className='text-[#FFF] text-lg text-center'>
+                <TableHead className="text-[#FFF] text-lg text-center">
                   User Name
                 </TableHead>
-                <TableHead className='text-[#FFF] text-lg text-center'>
+                <TableHead className="text-[#FFF] text-lg text-center">
                   Subscription
                 </TableHead>
-                <TableHead className='text-[#FFF] text-lg text-center'>
+                <TableHead className="text-[#FFF] text-lg text-center">
                   Join Date
                 </TableHead>
-                <TableHead className='text-[#FFF] text-lg text-center'>
+                <TableHead className="text-[#FFF] text-lg text-center">
                   Action
                 </TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {users?.data?.map((user: IUser) => (
-                <TableRow key={user?.id}>
-                  <TableCell className='font-medium text-lg text-[#B0B0B0] text-center'>
-                    {user?.id}
+              {currentTransactions.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell className="text-center text-black text-lg">
+                    {user.id}
                   </TableCell>
-                  <TableCell className='text-lg text-[#B0B0B0] text-center'>
-                    {user?.full_name}
+                  <TableCell className="text-center text-black text-lg">
+                    {user.name}
                   </TableCell>
-                  <TableCell className='text-lg text-[#B0B0B0] text-center'>
-                    {user?.email}
+                  <TableCell className="text-center text-black text-lg">
+                    {user.subscription}
                   </TableCell>
-                  <TableCell className='text-lg text-[#B0B0B0] text-center'>
-                    {user?.created_on.split("T")[0]}
+                  <TableCell className="text-center text-black text-lg">
+                    {user.date}
                   </TableCell>
-                  <TableCell className='text-lg text-[#B0B0B0] text-center'>
+                  <TableCell className="text-center text-black text-lg">
                     <Button
-                      variant='ghost'
-                      size='sm'
-                      className='h-8 w-8 p-0'
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
                       onClick={() => openUserModal(user)}
                     >
-                      <Info className='h-6 w-6' />
+                      <Info className="h-6 w-6" />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -203,40 +191,41 @@ function TransactionTable() {
           </Table>
         </div>
 
-        <div className='max-w-sm mx-auto flex items-center justify-between border-t border-gray-200 rounded-lg bg-[#0249E1] px-4 py-3 mp-6'>
-          <div className='flex items-center gap-2'>
+        {/* Pagination */}
+        <div className="max-w-sm mx-auto flex items-center justify-between border-t border-gray-200 rounded-lg bg-[#0249E1] px-4 py-3 mt-6">
+          <div className="flex items-center gap-2">
             <Button
-              variant='outline'
-              size='sm'
-              className='h-8 w-8 p-0'
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 p-0"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
-              <span className='sr-only'>Previous</span>
+              <span className="sr-only">Previous</span>
               <svg
-                className='h-4 w-4'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   strokeWidth={2}
-                  d='M15 19l-7-7 7-7'
+                  d="M15 19l-7-7 7-7"
                 />
               </svg>
             </Button>
-            <span className='text-sm text-[#E6E6E6]'>Previous</span>
+            <span className="text-sm text-[#E6E6E6]">Previous</span>
           </div>
 
-          <div className='flex items-center gap-1'>
+          <div className="flex items-center gap-1">
             {Array.from({ length: totalPages }, (_, index) => index + 1).map(
               (page) => (
                 <Button
                   key={page}
                   variant={page === currentPage ? "default" : "outline"}
-                  size='sm'
+                  size="sm"
                   className={`h-8 w-8 p-0 ${
                     page === currentPage ? "bg-teal-800 text-white" : ""
                   }`}
@@ -248,27 +237,27 @@ function TransactionTable() {
             )}
           </div>
 
-          <div className='flex items-center gap-2'>
-            <span className='text-sm text-[#E6E6E6]'>Next</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-[#E6E6E6]">Next</span>
             <Button
-              variant='outline'
-              size='sm'
-              className='h-8 w-8 p-0'
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 p-0"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
             >
-              <span className='sr-only'>Next</span>
+              <span className="sr-only">Next</span>
               <svg
-                className='h-4 w-4'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   strokeWidth={2}
-                  d='M9 5l7 7-7 7'
+                  d="M9 5l7 7-7 7"
                 />
               </svg>
             </Button>
@@ -276,39 +265,39 @@ function TransactionTable() {
         </div>
       </div>
 
+      {/* Modal */}
       {isModalOpen && selectedUser && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'>
-          <div className='relative w-full max-w-md rounded-md bg-[#000000] px-6 py-6 shadow-lg'>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="relative w-full max-w-md rounded-md bg-[#000000] px-6 py-6 shadow-lg">
             <button
               onClick={() => setIsModalOpen(false)}
-              className='absolute right-4 top-4 text-gray-500 hover:text-gray-700'
+              className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
             >
-              <X className='h-5 w-5' />
-              <span className='sr-only'>Close</span>
+              <X className="h-5 w-5" />
+              <span className="sr-only">Close</span>
             </button>
 
-            <h2 className='mb-6 py-5 text-center text-[30px] font-semibold text-[#E6E6E6]'>
+            <h2 className="mb-6 py-5 text-center text-[30px] font-semibold text-[#E6E6E6]">
               User Details
             </h2>
 
-            <div className='space-y-6'>
-              <DetailRow label='User ID:' value={selectedUser?.id} />
-              <DetailRow label='Email' value={selectedUser?.email} />
-              <DetailRow label='User Name' value={selectedUser?.full_name} />
-              <DetailRow label='Transaction Amount' value={"amount"} />
+            <div className="space-y-6">
+              <DetailRow label="User ID:" value={selectedUser?.id} />
+              <DetailRow label="User Name" value={selectedUser?.name} />
               <DetailRow
-                label='Subscription Status'
-                value={selectedUser?.subscription_status}
+                label="Transaction Amount"
+                value={selectedUser?.amount}
               />
               <DetailRow
-                label='Package Name'
-                value={selectedUser?.package_name}
+                label="Subscription Status"
+                value={selectedUser?.subscription}
               />
+              <DetailRow label="Join Date" value={selectedUser?.date} />
             </div>
 
             <Button
               onClick={() => setIsModalOpen(false)}
-              className='mt-6 w-full bg-[#45b1b4] hover:bg-[#5ce1e6b7]'
+              className="mt-6 w-full bg-[#45b1b4] hover:bg-[#5ce1e6b7]"
             >
               Okay
             </Button>

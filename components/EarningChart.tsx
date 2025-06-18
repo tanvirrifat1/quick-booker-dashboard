@@ -1,77 +1,78 @@
-"use client";
+import React, { useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
-import { useEffect, useRef } from "react";
-import { Chart, registerables } from "chart.js";
+const data = [
+  { name: "Page A", uv: 4000, pv: 2400, amt: 2400 },
+  { name: "Page B", uv: 3000, pv: 1398, amt: 2210 },
+  { name: "Page C", uv: 2000, pv: 9800, amt: 2290 },
+  { name: "Page D", uv: 2780, pv: 3908, amt: 2000 },
+  { name: "Page E", uv: 1890, pv: 4800, amt: 2181 },
+  { name: "Page F", uv: 2390, pv: 3800, amt: 2500 },
+  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
+];
 
-interface EarningsData {
-  month: string;
-  amount: number;
-}
+const EarningChart = () => {
+  const [selectedYear, setSelectedYear] = useState("2025");
 
-Chart.register(...registerables);
-
-interface EarningsChartProps {
-  data: EarningsData[];
-}
-
-export function EarningsChart({ data }: EarningsChartProps) {
-  const chartRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    if (!chartRef.current) return;
-
-    const ctx = chartRef.current.getContext("2d");
-    if (!ctx) return;
-
-    const chart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: data.map((item) => item.month),
-        datasets: [
-          {
-            label: "Earnings",
-            data: data.map((item) => item.amount),
-            backgroundColor: "#760C2A",
-            borderColor: "#760C2A",
-            borderRadius: 4,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: (value) => `$${value}`,
-              font: {
-                size: 12,
-              },
-            },
-          },
-          x: {
-            ticks: {
-              font: {
-                size: 13,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    return () => chart.destroy();
-  }, [data]);
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedYear(e.target.value);
+    // You can also fetch/update data based on selected year here
+  };
 
   return (
-    <div className='h-full w-full'>
-      <canvas ref={chartRef} />
+    <div className="bg-white rounded-lg shadow-md p-4 my-7">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold text-gray-800">
+          Earnings Overview
+        </h2>
+        <select
+          value={selectedYear}
+          onChange={handleYearChange}
+          className="border border-gray-300 rounded px-4 py-1 text-sm focus:outline-none"
+        >
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+        </select>
+      </div>
+
+      <div style={{ width: "100%", height: 300 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={data}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="pv"
+              stroke="#8884d8"
+              activeDot={{ r: 8 }}
+            />
+            <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
-}
+};
+
+export default EarningChart;

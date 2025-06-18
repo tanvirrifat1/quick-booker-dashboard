@@ -18,6 +18,8 @@ import Image from "next/image";
 import LogoutModal from "./logout-modal";
 import { useState } from "react";
 
+import logo from "@/public/tenis.jpg";
+
 export default function DashboardSidebar() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const router = useRouter();
@@ -50,11 +52,11 @@ export default function DashboardSidebar() {
               className="flex items-center justify-center gap-2 px-4 py-6"
             >
               <Image
-                src="/logo.png"
+                src={logo}
                 alt="logo"
                 width={140}
                 height={140}
-                className=""
+                className="h-20 w-20 rounded-md object-cover"
               />
             </Link>
 
@@ -160,8 +162,8 @@ function NavItem({ href, icon: Icon, label, active }: NavItemProps) {
           className={cn(
             "flex items-center gap-3 px-4 !py-5 transition-colors rounded-full",
             active
-              ? "bg-[#0249E1] text-secondary"
-              : "text-primary hover:bg-[#0249E1] hover:text-[#fff]"
+              ? "bg-gradient-to-br from-blue-600 via-blue-500 to-teal-400 text-white"
+              : "hover:bg-gradient-to-br hover:from-blue-600 hover:via-blue-500 hover:to-teal-400 hover:text-white"
           )}
         >
           <Icon size={18} />
