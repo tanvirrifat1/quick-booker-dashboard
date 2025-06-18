@@ -3,7 +3,14 @@
 import type React from "react";
 
 import Link from "next/link";
-import { LayoutDashboard, Users, Settings, BadgeAlert } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Settings,
+  BadgeAlert,
+  Notebook,
+  BookAIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
@@ -75,7 +82,7 @@ export default function DashboardSidebar() {
               />
               <NavItem
                 href="/bookingList"
-                icon={Users}
+                icon={Notebook}
                 label="Booking List"
                 active={
                   pathname === "/bookingList" ||
@@ -91,6 +98,13 @@ export default function DashboardSidebar() {
                   pathname === "/subscription" ||
                   pathname.startsWith("/subscription")
                 }
+              />
+
+              <NavItem
+                href="/court"
+                icon={BookAIcon}
+                label="Court"
+                active={pathname === "/court" || pathname.startsWith("/court")}
               />
 
               <NavItem
