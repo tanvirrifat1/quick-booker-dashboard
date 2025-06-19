@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Plus, X, MapPin, DollarSign, Clock, Calendar } from "lucide-react";
+import { toast, Toaster } from "sonner";
 
 interface TimeSlot {
   time: string;
@@ -53,16 +54,21 @@ export default function VenueForm() {
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const file: any = event.target.files?.[0];
     if (file) {
+      if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
+        alert("Only JPEG, PNG, and GIF images are allowed");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image size must be less than 5MB");
+        return;
+      }
+      handleInputChange("image", file);
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setImagePreview(result);
-        setFormData((prev) => ({
-          ...prev,
-          image: result,
-        }));
       };
       reader.readAsDataURL(file);
     }
@@ -70,7 +76,7 @@ export default function VenueForm() {
 
   const addTimeSlot = () => {
     if (!currentDate || !currentTime) {
-      alert("Please select both date and time");
+      toast.error("Please select both date and time");
       return;
     }
 
@@ -84,7 +90,7 @@ export default function VenueForm() {
       );
 
       if (timeExists) {
-        alert("This time slot already exists for this date");
+        toast.error("This time slot already exists for this date");
         return;
       }
 
@@ -155,12 +161,12 @@ export default function VenueForm() {
       !formData.price ||
       !formData.slotTime
     ) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
 
     if (formData.availableSlots.length === 0) {
-      alert("Please add at least one available time slot");
+      toast.error("Please add at least one available time slot");
       return;
     }
 
@@ -177,7 +183,7 @@ export default function VenueForm() {
     // Log data without the full image base64 string for readability
     console.log("Venue Data to Submit:", {
       ...submitData,
-      image: submitData.image ? "[Base64 Image Data]" : "",
+      image: submitData.image ?? null,
     });
 
     try {
@@ -193,7 +199,7 @@ export default function VenueForm() {
       }
       */
 
-      alert("Venue created successfully!");
+      toast.success("Venue created successfully!");
 
       setFormData({
         name: "",
@@ -221,7 +227,7 @@ export default function VenueForm() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <Card>
+      <Card className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Create New Court</CardTitle>
         </CardHeader>
@@ -377,7 +383,10 @@ export default function VenueForm() {
               </div>
 
               {formData.availableSlots.map((dateSlot, dateIndex) => (
-                <div key={dateIndex} className="border rounded-lg p-4">
+                <div
+                  key={dateIndex}
+                  className="border rounded-lg p-4 text-black"
+                >
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium">
                       {new Date(dateSlot.date).toLocaleDateString("en-US", {
@@ -456,22 +465,26 @@ export default function VenueForm() {
       )}
 
       <Card>
-        <CardContent className="pt-6">
-          <Button
-            onClick={handleSubmit}
-            className="border w-96 flex justify-center mx-auto hover:bg-blue-600 transition-colors duration-200"
-            size="lg"
-            disabled={
-              !formData.name ||
-              !formData.address ||
-              !formData.price ||
-              !formData.slotTime ||
-              formData.availableSlots.length === 0
-            }
-          >
-            Create Court
-          </Button>
-        </CardContent>
+        <div
+          className="
+        flex flex-col items-center justify-center space-y-4"
+        >
+          <CardContent className="pt-6">
+            <button
+              onClick={handleSubmit}
+              className="border h-10 rounded-md w-96  font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-teal-500 transition-colors"
+              disabled={
+                !formData.name ||
+                !formData.address ||
+                !formData.price ||
+                !formData.slotTime ||
+                formData.availableSlots.length === 0
+              }
+            >
+              Create Court
+            </button>
+          </CardContent>
+        </div>
       </Card>
     </div>
   );
