@@ -1,28 +1,39 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { getCurrentUser } from "./service/authService";
+import { jwtDecode } from "jwt-decode";
 
-export async function middleware(request: Request) {
-  // Fetch current user (authentication token)
+const SIGN_IN_URL = "/signin";
+
+export async function middleware(request: NextRequest) {
   const token = await getCurrentUser();
 
-  // If there's no token, redirect to login page
   if (!token) {
-    return NextResponse.redirect(new URL("/signin", request.url));
+    return NextResponse.redirect(new URL(SIGN_IN_URL, request.url));
   }
 
-  // If user is authenticated, proceed with the request
-  return NextResponse.next();
+  try {
+    const decoded: any = jwtDecode(token);
+
+    if (decoded?.role !== "ADMIN") {
+      return NextResponse.redirect(new URL(SIGN_IN_URL, request.url));
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Invalid token:", error);
+    return NextResponse.redirect(new URL(SIGN_IN_URL, request.url));
+  }
 }
 
-// Define which paths the middleware applies to
 export const config = {
   matcher: [
-    // "/",
-    // "/dashboard",
-    // "/profile",
-    // "/settings",
-    // "/orders",
-    // "/cart",
-    // "/checkout",
+    "/",
+    "/users",
+    "/bookingList",
+    "/settings",
+    "/court",
+    "/cart",
+    "/checkout",
   ],
 };

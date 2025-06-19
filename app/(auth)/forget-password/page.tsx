@@ -7,6 +7,7 @@ import { ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import logos from "@/public/banner.png";
 
@@ -16,6 +17,7 @@ export default function ForgotPasswordPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const router = useRouter();
   const validateEmail = (email: string) => {
     return /\S+@\S+\.\S+/.test(email);
   };
@@ -40,6 +42,7 @@ export default function ForgotPasswordPage() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
       setIsSuccess(true);
+      router.push("/verify-otp?email=" + email);
     } catch (error) {
       setError("Failed to send OTP. Please try again.");
     } finally {

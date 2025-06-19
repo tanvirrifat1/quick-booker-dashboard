@@ -76,9 +76,9 @@ export default function SignInPage() {
         password: formData.password,
       }).unwrap();
 
-      if (res?.status === "success") {
-        localStorage.setItem("access_token", res?.access_token);
-        await saveTokens(res?.token);
+      if (res?.success) {
+        localStorage.setItem("accessToken", res?.data?.accessToken);
+        await saveTokens(res?.data?.accessToken);
         router.push("/");
       } else {
         setErrors({ submit: "Invalid credentials. Please try again." });
@@ -135,10 +135,11 @@ export default function SignInPage() {
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`pl-10 h-12 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 text-black ${
-                    errors.email ? "border-red-500" : ""
+                  className={`pl-10 h-12 border rounded-lg focus:border-blue-500 focus:ring-blue-500 text-black ${
+                    errors.email ? "border-red-500" : "border-gray-200"
                   }`}
                 />
+
                 {errors.email && (
                   <p className="mt-1 text-sm text-red-500">{errors.email}</p>
                 )}
@@ -165,7 +166,7 @@ export default function SignInPage() {
                   placeholder="Enter Password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`pl-10 pr-10 h-12 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 text-black ${
+                  className={`pl-10 pr-10 h-12 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 text-black ${
                     errors.password ? "border-red-500" : ""
                   }`}
                 />

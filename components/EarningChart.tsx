@@ -57,7 +57,7 @@ const EarningChart = () => {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <XAxis />
             <YAxis />
             <Tooltip />
             <Legend />

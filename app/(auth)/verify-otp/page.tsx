@@ -19,6 +19,13 @@ export default function VerifyOTP() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [email, setEmail] = useState("");
 
+  const emailFromQuery =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("email")
+      : null;
+
+  console.log(emailFromQuery);
+
   // Handle input change and auto-focus to next input
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) {

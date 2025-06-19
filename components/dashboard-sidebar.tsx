@@ -25,16 +25,22 @@ import LogoutModal from "./logout-modal";
 import { useState } from "react";
 
 import logo from "@/public/tenis.jpg";
+import { logout } from "@/service/authService";
 
 export default function DashboardSidebar() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Perform logout actions here (clear tokens, etc.)
     // Redirect to login page
-    router.push("/login");
+
+    await logout();
+
+    localStorage.removeItem("accessToken");
+
+    router.push("/signin");
   };
 
   if (
