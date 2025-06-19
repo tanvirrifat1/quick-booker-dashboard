@@ -1,15 +1,15 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useVerifyOtpMutation } from "@/redux/feature/authAPI";
-import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+
+import logo from "@/public/banner.png";
 
 export default function VerifyOTP() {
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
@@ -18,9 +18,6 @@ export default function VerifyOTP() {
   const [countdown, setCountdown] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [email, setEmail] = useState("");
-  const router = useRouter();
-
-  const [verifyOtp] = useVerifyOtpMutation();
 
   // Handle input change and auto-focus to next input
   const handleChange = (index: number, value: string) => {
@@ -74,26 +71,17 @@ export default function VerifyOTP() {
     // Validate OTP
     if (otpValue.length !== 6 || !/^\d+$/.test(otpValue)) {
       toast.error("Please enter a valid OTP");
-
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const res = await verifyOtp({
-        email,
-        otp: otpValue,
-      }).unwrap();
-
-      if (res.status === "success") {
-        localStorage.setItem("access_token", res.access_token);
-        toast.success(res.message);
-        router.push("/");
-      } else {
-        toast.error(res.message);
-      }
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      toast.success("OTP verified successfully!");
+      // Handle success - redirect or update state
     } catch (error) {
-      toast.warning("The OTP you entered is incorrect or has expired");
+      toast.error("The OTP you entered is incorrect or has expired");
     } finally {
       setIsSubmitting(false);
     }
@@ -102,16 +90,12 @@ export default function VerifyOTP() {
   // Handle resend OTP
   const handleResend = async () => {
     setResendDisabled(true);
-    setCountdown(30); // 30 seconds cooldown
+    setCountdown(30);
 
     try {
-      // Simulate API call to resend OTP
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
       toast.success("OTP Resent");
-
-      // Clear current OTP fields
-      setOtp(["", "", "", ""]);
+      setOtp(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
     } catch (error) {
       toast.error("Please try again later");
@@ -129,10 +113,7 @@ export default function VerifyOTP() {
   }, [countdown, resendDisabled]);
 
   useEffect(() => {
-    // Focus on the first input when the component mounts
     inputRefs.current[0]?.focus();
-
-    // Get email from local storage
     const storedEmail = localStorage.getItem("email");
     if (storedEmail) {
       setEmail(storedEmail);
@@ -140,86 +121,89 @@ export default function VerifyOTP() {
   }, []);
 
   return (
-    <div className='w-full min-h-screen bg-[url(/auth-bg.png)] flex flex-col items-center justify-center p-4 md:p-8'>
-      <div className='absolute top-0 left-0 w-full h-full bg-black opacity-50'></div>
-      <div className='container mx-auto space-y-8 flex flex-col md:flex-row items-center z-50'>
-        <div className='w-full md:w-1/2 max-w-lg mx-auto bg-background px-6 py-16 rounded-xl'>
-          <div className='text-center flex items-center justify-center space-x-2.5'>
-            <svg
-              width='24'
-              height='24'
-              viewBox='0 0 24 24'
-              fill='none'
-              xmlns='http://www.w3.org/2000/svg'
-            >
-              <path
-                d='M10 19L3 12M3 12L10 5M3 12L21 12'
-                stroke='#4F3E19'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              />
-            </svg>
+    <div className="min-h-screen flex">
+      {/* Left side - Tennis player image */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        <Image
+          src={logo}
+          alt="Tennis player sitting on court"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
 
-            <h1 className='text-[32px] font-semibold text-primary'>
-              Verify with OTP
-            </h1>
-          </div>
-          <form onSubmit={handleSubmit} className='mt-8 space-y-6'>
-            <div className='flex justify-center gap-2 md:gap-4'>
-              {otp.map((digit, index) => (
-                <Input
-                  key={index}
-                  ref={(el) => {
-                    inputRefs.current[index] = el;
-                  }}
-                  type='text'
-                  inputMode='numeric'
-                  pattern='[0-9]*'
-                  maxLength={6}
-                  value={digit}
-                  onChange={(e) => handleChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
-                  className='h-14 w-14 md:h-16 md:w-16 text-center text-xl font-semibold'
-                  autoFocus={index === 0}
-                  disabled={isSubmitting}
-                />
-              ))}
-            </div>
+      {/* Right side - Form */}
+      <div className="w-full lg:w-1/2 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          {/* Back button */}
+          <Link
+            href="/signin"
+            className="inline-flex items-center text-white/80 hover:text-white mb-8 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back to Sign In
+          </Link>
 
-            <button
-              type='submit'
-              className='w-full !bg-button text-secondary text-lg font-medium py-2 rounded-full transition-colors cursor-pointer'
-              disabled={isSubmitting || otp.some((digit) => !digit)}
-            >
-              {isSubmitting ? "Verifying..." : "Submit"}
-            </button>
-
-            {/* <div className='flex justify-end'>
-              <p className='text-lg text-primary'>
-                Didn&apos;t receive the OTP?{" "}
-                <button
-                  type='button'
-                  onClick={handleResend}
-                  disabled={resendDisabled}
-                  className='text-[#F99F04] hover:text-[#ffaf25] font-medium disabled:text-gray-400 disabled:cursor-not-allowed'
-                >
-                  {resendDisabled ? `Resend (${countdown}s)` : "Resend"}
-                </button>
+          {/* Form card */}
+          <div className="bg-white rounded-2xl p-8 shadow-xl">
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+                Verify Email
+              </h1>
+              <p className="text-gray-600 text-sm">
+                Please enter the OTP we have sent to your email
               </p>
-            </div> */}
-
-            <p className="text-lg text-center text-primary">Please enter the OTP we have sent you in your email.</p>
-
-            <div className='text-center'>
-              <Link
-                href='/signin'
-                className='text-primary hover:text-primary text-base font-medium'
-              >
-                Back to Sign In
-              </Link>
             </div>
-          </form>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* OTP Input Fields */}
+              <div className="flex justify-center gap-3">
+                {otp.map((digit, index) => (
+                  <Input
+                    key={index}
+                    ref={(el) => {
+                      inputRefs.current[index] = el;
+                    }}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={6}
+                    value={digit}
+                    onChange={(e) => handleChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    className="h-12 w-12 text-center text-lg font-semibold text-black border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500"
+                    autoFocus={index === 0}
+                    disabled={isSubmitting}
+                  />
+                ))}
+              </div>
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg transition-colors"
+                disabled={isSubmitting || otp.some((digit) => !digit)}
+              >
+                {isSubmitting ? "Verifying..." : "Verify"}
+              </Button>
+
+              {/* Resend OTP */}
+              <div className="text-center">
+                <p className="text-gray-600 text-sm">
+                  {"Didn't receive the OTP? "}
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resendDisabled}
+                    className="text-blue-500 hover:text-blue-600 font-medium disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {resendDisabled ? `Resend (${countdown}s)` : "Resend"}
+                  </button>
+                </p>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

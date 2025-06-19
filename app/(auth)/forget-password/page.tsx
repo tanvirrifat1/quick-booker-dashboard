@@ -1,138 +1,195 @@
 "use client";
 
 import type React from "react";
-
 import { useState, type FormEvent } from "react";
+import Image from "next/image";
+import { ArrowLeft, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useSendOtpMutation } from "@/redux/feature/authAPI";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
-export default function ForgetPassword() {
+import logos from "@/public/banner.png";
+
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const router = useRouter();
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const [sendOtp] = useSendOtpMutation();
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validateEmail = (email: string) => {
+    return /\S+@\S+\.\S+/.test(email);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    if (!email.trim()) {
+      setError("Email is required");
       return;
     }
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
     setIsSubmitting(true);
+    setError("");
 
     try {
-      const response = await sendOtp({ email }).unwrap();
-
-      if (response.status === "success") {
-        localStorage.setItem("email", email);
-        toast.success("OTP sent successfully!");
-        setSubmitSuccess(true);
-        router.push("/verify-otp");
-      }
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setIsSuccess(true);
     } catch (error) {
-      console.error("Error submitting form:", error);
-      setErrors({ submit: "Invalid credentials. Please try again." });
+      setError("Failed to send OTP. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  return (
-    <main className='w-full min-h-screen bg-[url(/auth-bg.png)] flex flex-col md:flex-row items-center justify-center p-4 md:p-8'>
-      <div className='absolute top-0 left-0 w-full h-full bg-black opacity-50'></div>
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (error) {
+      setError("");
+    }
+  };
 
-      <div className='container mx-auto flex flex-col md:flex-row items-center z-50'>
-        {/* Form Section */}
-        <div className='w-full md:w-1/2 max-w-lg mx-auto bg-background px-6 py-16 rounded-xl'>
-          <div className='text-center mb-6'>
-            <h1 className='text-[32px] font-bold text-primary mb-2'>
-              Forget Your Password
-            </h1>
-            <p className='text-primary text-lg'>
-              Enter your email address to reset your password.
-            </p>
-          </div>
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen flex">
+        {/* Left side - Tennis player image */}
+        <div className="hidden lg:flex lg:w-1/2 relative">
+          <Image
+            src={logos}
+            alt="Tennis player on blue court"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
 
-          {submitSuccess ? (
-            <div className='bg-green-50 border border-green-200 text-green-700 p-4 rounded-md mb-6'>
-              Sign in successful! Redirecting to your dashboard...
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className='space-y-4'>
-              <div className='relative mb-4'>
-                <label
-                  htmlFor='email'
-                  className='absolute left-3 top-1/2 transform -translate-y-1/2 text-[#B0B0B0] text-lg font-medium'
-                >
+        {/* Right side - Success message */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-400">
+          <div className="w-full max-w-md">
+            <div className="bg-white rounded-2xl p-8 shadow-xl text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
-                    width='24'
-                    height='24'
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
+                    className="w-8 h-8 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
                     <path
-                      d='M3 8L10.8906 13.2604C11.5624 13.7083 12.4376 13.7083 13.1094 13.2604L21 8M5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19Z'
-                      stroke='#B0B0B0'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    ></path>
                   </svg>
-                </label>
-                <input
-                  type='email'
-                  id='email'
-                  name='email'
-                  placeholder='Enter your email...'
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`bg-input text-primary pl-12 w-full p-3  placeholder:text-[#B0B0B0] ${
-                    errors.email ? "border-red-500" : "border-slate-300"
-                  } rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  required
-                />
+                </div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                  OTP Sent!
+                </h2>
+                <p className="text-gray-600">
+                  We've sent a verification code to {email}. Please check your
+                  email and follow the instructions.
+                </p>
               </div>
-
-              {errors.submit && (
-                <p className='text-red-500 text-sm'>{errors.submit}</p>
-              )}
-
-              <button
-                type='submit'
-                disabled={isSubmitting}
-                className='w-full bg-button text-secondary text-lg font-medium py-3 px-4 rounded-full transition duration-200 ease-in-out'
+              <Button
+                onClick={() => {
+                  setIsSuccess(false);
+                  setEmail("");
+                }}
+                variant="outline"
+                className="w-full"
               >
-                {isSubmitting ? "Reset Password ..." : "Reset Password"}
-              </button>
-            </form>
-          )}
-
-          <div className='text-center mt-6'>
-            <p className='text-primary text-lg'>
-              Back to{" "}
-              <Link
-                href='/signin'
-                className='text-primary text-lg font-medium hover:underline'
-              >
-                Sign In
-              </Link>
-            </p>
+                Send Another Code
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </main>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex">
+      {/* Left side - Tennis player image */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        <Image
+          src={logos}
+          alt="Tennis player on blue court"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
+
+      {/* Right side - Forgot password form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-400">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl p-8 shadow-xl">
+            {/* Header */}
+            <div className="flex items-center mb-8">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-0 h-auto mr-3 hover:bg-transparent"
+                asChild
+              >
+                <Link href="/sign-in">
+                  <ArrowLeft className="h-5 w-5 text-gray-600" />
+                </Link>
+              </Button>
+              <h1 className="text-xl font-semibold text-gray-900">
+                Forget Password
+              </h1>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  className={`pl-10 h-12 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 text-gray-900 placeholder:text-gray-500 ${
+                    error ? "border-red-500" : ""
+                  }`}
+                />
+                {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-12 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? "Sending OTP..." : "Send OTP"}
+              </Button>
+            </form>
+
+            {/* Back to sign in */}
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Remember your password?{" "}
+                <Link
+                  href="/signin"
+                  className="text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Sign In
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

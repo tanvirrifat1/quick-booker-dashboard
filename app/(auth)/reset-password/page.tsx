@@ -4,6 +4,8 @@ import type React from "react";
 import { useState, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
+import logo from "@/public/banner.png";
 
 export default function CreatePasswordPage() {
   const [formData, setFormData] = useState({
@@ -12,6 +14,8 @@ export default function CreatePasswordPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -72,106 +76,143 @@ export default function CreatePasswordPage() {
   };
 
   return (
-    <main className='w-full min-h-screen flex flex-col md:flex-row items-center justify-center p-4 md:p-8 bg-gray-50'>
-      <div className='container mx-auto flex flex-col md:flex-row items-center'>
-        {/* Logo Section */}
-        <div className='hidden w-full md:w-1/2 md:flex items-center justify-center p-8'>
-          <Link href='/' className='max-w-xs'>
-            <Image
-              src='/logo.svg' // Replace with your logo path
-              alt='DesignDoc Logo'
-              width={200}
-              height={100}
-              className='mb-2'
-            />
-          </Link>
-        </div>
+    <main className="min-h-screen flex">
+      {/* Left Side - Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        <Image
+          src={logo}
+          alt="Tennis player on blue court"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
 
-        {/* Form Section */}
-        <div className='w-full md:w-1/2 max-w-md'>
-          <div className='text-center mb-6'>
-            <h1 className='text-[32px] font-bold text-primary mb-2'>
-              Create Password
-            </h1>
-            <p className='text-primary text-lg'>
-              Create your new password for your account
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className='space-y-4'>
-            <div>
-              <label
-                htmlFor='newPassword'
-                className='block text-primary text-lg font-medium mb-1'
-              >
-                New Password
-              </label>
-              <input
-                type='password'
-                id='newPassword'
-                name='newPassword'
-                placeholder='Enter your password'
-                value={formData.newPassword}
-                onChange={handleChange}
-                className={`w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.newPassword ? "border-red-500" : ""
-                }`}
-              />
-              {errors.newPassword && (
-                <p className='text-red-500 text-sm mt-1'>
-                  {errors.newPassword}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor='confirmPassword'
-                className='block text-primary text-lg font-medium mb-1'
-              >
-                Confirm Password
-              </label>
-              <input
-                type='password'
-                id='confirmPassword'
-                name='confirmPassword'
-                placeholder='Enter your password'
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className={`w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.confirmPassword ? "border-red-500" : ""
-                }`}
-              />
-              {errors.confirmPassword && (
-                <p className='text-red-500 text-sm mt-1'>
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
-
-            {errors.submit && (
-              <p className='text-red-500 text-sm'>{errors.submit}</p>
-            )}
-
-            <button
-              type='submit'
-              disabled={isSubmitting}
-              className='w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-4 rounded-md transition duration-200 ease-in-out'
-            >
-              {isSubmitting ? "Processing..." : "Continue"}
-            </button>
-          </form>
-
-          <div className='text-center mt-6'>
-            <p className='text-gray-600'>
-              Back to{" "}
+      {/* Right Side - Form */}
+      <div className="w-full lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-400 flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            {/* Header */}
+            <div className="flex items-center mb-8">
               <Link
-                href='/signin'
-                className='text-blue-600 font-medium hover:underline'
+                href="/signin"
+                className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
               >
-                Sign In
+                <ArrowLeft className="w-5 h-5 mr-3" />
+                <span className="text-lg font-semibold">Create Password</span>
               </Link>
-            </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* New Password Field */}
+              <div>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    id="newPassword"
+                    name="newPassword"
+                    placeholder="New password"
+                    value={formData.newPassword}
+                    onChange={handleChange}
+                    className={`w-full pl-12 pr-12 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                      errors.newPassword ? "border-red-500 ring-red-200" : ""
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </button>
+                </div>
+                {errors.newPassword && (
+                  <p className="text-red-500 text-sm mt-2 ml-1">
+                    {errors.newPassword}
+                  </p>
+                )}
+              </div>
+
+              {/* Confirm Password Field */}
+              <div>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className={`w-full pl-12 pr-12 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                      errors.confirmPassword
+                        ? "border-red-500 ring-red-200"
+                        : ""
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-red-500 text-sm mt-2 ml-1">
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+
+              {errors.submit && (
+                <p className="text-red-500 text-sm text-center">
+                  {errors.submit}
+                </p>
+              )}
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 ease-in-out transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Processing...
+                  </div>
+                ) : (
+                  "Continue"
+                )}
+              </button>
+            </form>
+
+            {/* Footer */}
+            <div className="text-center mt-8">
+              <p className="text-gray-600">
+                Back to{" "}
+                <Link
+                  href="/signin"
+                  className="text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors"
+                >
+                  Sign In
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>

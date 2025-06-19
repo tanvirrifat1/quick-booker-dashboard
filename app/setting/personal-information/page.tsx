@@ -34,7 +34,7 @@ export default function PersonalInformationPage() {
       <div className="flex-1 w-full">
         <main className="w-[98%] mx-auto p-4 md:p-6 bg-[#FFFFFF] rounded-md">
           <div className="">
-            <div className="w-full bg-[#F2F6FF] mb-6 flex items-center justify-between p-6 rounded-xl">
+            <div className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 mb-6 flex items-center justify-between p-6 rounded-xl bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400">
               <Link
                 href="/setting"
                 className="inline-flex items-center text-[#101010] hover:text-[#2a2c2c]"
@@ -49,7 +49,7 @@ export default function PersonalInformationPage() {
             <div className="rounded-md shadow">
               <div className="flex flex-col md:flex-row gap-8 mb-6">
                 {/* Profile Photo Section */}
-                <div className="bg-[#F2F6FF] w-full md:w-64 flex flex-col items-center p-6 rounded-2xl">
+                <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 w-full md:w-64 flex flex-col items-center p-6 rounded-2xl">
                   <div className="w-32 h-32 rounded-full overflow-hidden relative mb-3">
                     <Image
                       src={
@@ -69,14 +69,14 @@ export default function PersonalInformationPage() {
 
                 {/* User Information Section */}
                 <div className="flex-1 space-y-4">
-                  <div className="bg-[#F2F6FF] flex gap-4 py-3 px-6 rounded-xl">
-                    <div className="text-lg font-medium text-[#101010]">
+                  <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 flex gap-4 py-3 px-6 rounded-xl">
+                    <div className="text-lg font-medium text-[#101010] ">
                       Name:
                     </div>
                     <div className="text-lg  text-[#101010]">{user?.name}</div>
                   </div>
 
-                  <div className="bg-[#F2F6FF] flex gap-4 py-3 px-6 rounded-xl">
+                  <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 flex gap-4 py-3 px-6 rounded-xl">
                     <div className="text-lg font-medium text-[#101010]">
                       Email:
                     </div>
@@ -84,7 +84,7 @@ export default function PersonalInformationPage() {
                       {user?.email}
                     </div>
                   </div>
-                  <div className="bg-[#F2F6FF] flex gap-4 py-3 px-6 rounded-xl">
+                  <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 flex gap-4 py-3 px-6 rounded-xl">
                     <div className="text-lg font-medium text-[#101010]">
                       Phone:
                     </div>
@@ -92,15 +92,6 @@ export default function PersonalInformationPage() {
                       {user?.phone}
                     </div>
                   </div>
-
-                  {/* <div className='bg-[#333333] grid grid-cols-1 md:grid-cols-3 gap-4 py-3 px-6 rounded-xl'>
-                    <div className='text-lg font-medium text-[#101010]'>
-                      Phone Number:
-                    </div>
-                    <div className='md:col-span-2 text-lg text-[#101010]'>
-                      {user?.phone}
-                    </div>
-                  </div> */}
 
                   <div className="justify-self-end">
                     <Link
