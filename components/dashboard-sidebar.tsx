@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Users,
   Settings,
-  BadgeAlert,
   Notebook,
   BookAIcon,
 } from "lucide-react";
@@ -87,16 +86,6 @@ export default function DashboardSidebar() {
                 active={
                   pathname === "/bookingList" ||
                   pathname.startsWith("/bookingList")
-                }
-              />
-
-              <NavItem
-                href="/subscription"
-                icon={BadgeAlert}
-                label="Subscription"
-                active={
-                  pathname === "/subscription" ||
-                  pathname.startsWith("/subscription")
                 }
               />
 
