@@ -109,7 +109,7 @@ export default function CourtPage() {
                         size="sm"
                         className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1 h-auto font-medium"
                       >
-                        Edit
+                        <Link href={`/court/${court.id}`}>Edit</Link>
                       </Button>
                       <Button
                         variant="ghost"
