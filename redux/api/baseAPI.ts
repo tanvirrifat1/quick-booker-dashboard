@@ -14,6 +14,8 @@ export const baseApi = createApi({
     "MsPost",
     "Donation",
     "Profile",
+    "Privacy",
+    "AboutUs",
   ],
   endpoints: () => ({}),
 });

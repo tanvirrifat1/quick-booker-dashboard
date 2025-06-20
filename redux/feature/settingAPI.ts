@@ -26,16 +26,6 @@ const settingAPI = baseApi.injectEndpoints({
       }),
     }),
 
-    getTermsAndConditions: builder.query({
-      query: () => ({
-        url: `/dicipline/terms-conditions/`,
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }),
-    }),
-
     setTermsAndConditions: builder.mutation({
       query: (data) => ({
         url: `/dicipline/terms-conditions/`,
@@ -54,6 +44,7 @@ const settingAPI = baseApi.injectEndpoints({
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         method: "GET",
+        providesTags: ["Privacy"],
       }),
     }),
 
@@ -65,27 +56,18 @@ const settingAPI = baseApi.injectEndpoints({
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: data,
+        invalidatesTags: ["Privacy"],
       }),
     }),
 
-    getTrustAndSafety: builder.query({
+    getAboutUs: builder.query({
       query: () => ({
-        url: `/dicipline/trust-safety/`,
+        url: `/setting/get/about`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }),
-    }),
-
-    setTrustAndSafety: builder.mutation({
-      query: (data) => ({
-        url: `/dicipline/trust-safety/`,
-        method: "PUT",
-        body: data,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
+        providesTags: ["AboutUs"],
       }),
     }),
   }),
@@ -94,10 +76,8 @@ const settingAPI = baseApi.injectEndpoints({
 export const {
   useUpdateProfileMutation,
   useUpdatePasswordMutation,
-  useGetTermsAndConditionsQuery,
   useSetTermsAndConditionsMutation,
   useGetPrivacyPolicyQuery,
   useSetPrivacyPolicyMutation,
-  useGetTrustAndSafetyQuery,
-  useSetTrustAndSafetyMutation,
+  useGetAboutUsQuery,
 } = settingAPI;
