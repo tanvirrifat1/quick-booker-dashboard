@@ -11,7 +11,17 @@ const dashboardAPI = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    getEarning: builder.query<any, void>({
+      query: () => ({
+        url: "/dashboard/get-earning-chart-data",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetStatisticsQuery } = dashboardAPI;
+export const { useGetStatisticsQuery, useGetEarningQuery } = dashboardAPI;

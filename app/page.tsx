@@ -25,8 +25,6 @@ import Loading from "@/components/Loading";
 export default function DashboardContent() {
   const { data, isLoading } = useGetStatisticsQuery();
 
-  console.log(data);
-
   if (isLoading)
     return (
       <div>

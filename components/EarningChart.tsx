@@ -1,3 +1,4 @@
+import { useGetEarningQuery } from "@/redux/feature/dashboardAPI";
 import React, { useState } from "react";
 import {
   LineChart,
@@ -10,23 +11,31 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { name: "January", uv: 4000, pv: 2400, amt: 2400 },
-  { name: "February", uv: 3000, pv: 1398, amt: 2210 },
-  { name: "March", uv: 2000, pv: 9800, amt: 2290 },
-  { name: "April", uv: 2780, pv: 3908, amt: 2000 },
-  { name: "May", uv: 1890, pv: 4800, amt: 2181 },
-  { name: "June", uv: 2390, pv: 3800, amt: 2500 },
-  { name: "July", uv: 3490, pv: 4300, amt: 2100 },
-];
-
 const EarningChart = () => {
   const [selectedYear, setSelectedYear] = useState("2025");
+  const { data: earning, isLoading } = useGetEarningQuery();
+
+  // Map the fetched data to the format required by recharts
+  const chartData =
+    earning?.data?.[0]?.earnings?.map((item: any) => ({
+      name: item.month, // X-axis: month (e.g., 'Jan', 'Feb')
+      totalAmount: item.totalAmount, // Y-axis: earnings
+    })) || [];
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedYear(e.target.value);
-    // You can also fetch/update data based on selected year here
+    // Future: Add logic to fetch data for the selected year if API supports it
   };
+
+  // Show loading state while fetching data
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // Handle case when no data is available
+  if (!earning?.data?.[0]?.earnings) {
+    return <div>No earnings data available.</div>;
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md p-4 my-7">
@@ -34,7 +43,7 @@ const EarningChart = () => {
         <h2 className="text-lg font-semibold text-gray-800">
           Earnings Overview
         </h2>
-        <select
+        {/* <select
           value={selectedYear}
           onChange={handleYearChange}
           className="border border-gray-300 rounded px-4 py-1 text-sm focus:outline-none"
@@ -42,13 +51,13 @@ const EarningChart = () => {
           <option value="2025">2025</option>
           <option value="2026">2026</option>
           <option value="2027">2027</option>
-        </select>
+        </select> */}
       </div>
 
       <div style={{ width: "100%", height: 300 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={data}
+            data={chartData}
             margin={{
               top: 5,
               right: 30,
@@ -63,11 +72,11 @@ const EarningChart = () => {
             <Legend />
             <Line
               type="monotone"
-              dataKey="pv"
+              dataKey="totalAmount"
               stroke="#8884d8"
               activeDot={{ r: 8 }}
+              name="Earnings"
             />
-            <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
           </LineChart>
         </ResponsiveContainer>
       </div>
