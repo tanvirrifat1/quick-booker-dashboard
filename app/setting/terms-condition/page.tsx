@@ -5,38 +5,38 @@ import { ArrowLeft } from "lucide-react";
 
 export default function TermsConditionPage() {
   return (
-    <div className='flex min-h-screen bg-gray-50'>
-      <div className='flex-1 w-full'>
-        <main className='w-full p-4 md:p-6'>
-          <div className='max-w-3xl mx-auto'>
-            <div className='mb-6 flex items-center justify-between'>
+    <div className="flex min-h-screen bg-gray-50">
+      <div className="flex-1 w-full">
+        <main className="w-full p-4 md:p-6">
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-6 flex items-center justify-between">
               <Link
-                href='/setting'
-                className='inline-flex items-center text-primary hover:text-teal-700'
+                href="/setting"
+                className="inline-flex items-center text-primary hover:text-teal-700"
               >
-                <ArrowLeft className='mr-2 h-4 w-4' />
-                <span className='text-xl font-semibold'>Terms & Condition</span>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                <span className="text-xl font-semibold">Terms & Condition</span>
               </Link>
 
               <Link
-                href='/setting/terms-condition/edit'
-                className='inline-flex items-center text-primary hover:text-teal-700 border border-[#760C2A] rounded-md px-4 py-1.5'
+                href="/setting/terms-condition/edit"
+                className="inline-flex items-center text-primary hover:text-teal-700 border border-[#760C2A] rounded-md px-4 py-1.5"
               >
-                <span className='text-xl font-semibold'>Edit</span>
+                <span className="text-xl font-semibold">Edit</span>
               </Link>
             </div>
 
-            <div className='prose prose-sm max-w-none'>
-              <h2 className='text-xl font-semibold mb-4'>
+            <div className="prose prose-sm max-w-none">
+              <h2 className="text-xl font-semibold mb-4">
                 Terms and Conditions
               </h2>
 
-              <p className='mb-4'>
+              <p className="mb-4">
                 Welcome to DesignDoc. By accessing or using our service, you
                 agree to be bound by these Terms and Conditions.
               </p>
 
-              <h3 className='text-lg font-medium mt-6 mb-2'>
+              <h3 className="text-lg font-medium mt-6 mb-2">
                 1. Acceptance of Terms
               </h3>
               <p>
@@ -46,7 +46,7 @@ export default function TermsConditionPage() {
                 do not use our services.
               </p>
 
-              <h3 className='text-lg font-medium mt-6 mb-2'>
+              <h3 className="text-lg font-medium mt-6 mb-2">
                 2. User Accounts
               </h3>
               <p>
@@ -56,7 +56,7 @@ export default function TermsConditionPage() {
                 activities that occur under your account.
               </p>
 
-              <h3 className='text-lg font-medium mt-6 mb-2'>
+              <h3 className="text-lg font-medium mt-6 mb-2">
                 3. Subscription and Payments
               </h3>
               <p>
@@ -66,7 +66,7 @@ export default function TermsConditionPage() {
                 otherwise specified.
               </p>
 
-              <h3 className='text-lg font-medium mt-6 mb-2'>4. User Content</h3>
+              <h3 className="text-lg font-medium mt-6 mb-2">4. User Content</h3>
               <p>
                 You retain ownership of any content you submit to the platform.
                 However, by submitting content, you grant DesignDoc a worldwide,
@@ -75,7 +75,7 @@ export default function TermsConditionPage() {
                 the service.
               </p>
 
-              <h3 className='text-lg font-medium mt-6 mb-2'>
+              <h3 className="text-lg font-medium mt-6 mb-2">
                 5. Prohibited Activities
               </h3>
               <p>
@@ -85,14 +85,14 @@ export default function TermsConditionPage() {
                 scraping, or introducing malware.
               </p>
 
-              <h3 className='text-lg font-medium mt-6 mb-2'>6. Termination</h3>
+              <h3 className="text-lg font-medium mt-6 mb-2">6. Termination</h3>
               <p>
                 DesignDoc reserves the right to terminate or suspend your
                 account and access to the service at any time, without prior
                 notice or liability, for any reason.
               </p>
 
-              <h3 className='text-lg font-medium mt-6 mb-2'>
+              <h3 className="text-lg font-medium mt-6 mb-2">
                 7. Changes to Terms
               </h3>
               <p>
@@ -101,7 +101,7 @@ export default function TermsConditionPage() {
                 constitutes your acceptance of the new terms.
               </p>
 
-              <p className='mt-6 text-sm text-gray-500'>
+              <p className="mt-6 text-sm text-gray-500">
                 Last updated: May 8, 2023
               </p>
             </div>

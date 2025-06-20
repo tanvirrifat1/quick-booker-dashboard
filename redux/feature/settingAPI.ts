@@ -3,17 +3,6 @@ import baseApi from "../api/baseAPI";
 
 const settingAPI = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getProfile: builder.query({
-      query: () => ({
-        url: `/api-auth/user_profile/`,
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }),
-      providesTags: ["Profile"],
-    }),
-
     updateProfile: builder.mutation({
       query: (data) => ({
         url: `/api-auth/update_profile/`,
@@ -60,9 +49,9 @@ const settingAPI = baseApi.injectEndpoints({
 
     getPrivacyPolicy: builder.query({
       query: () => ({
-        url: `/api-apps/privacy_policies/`,
+        url: `/setting/get/privacy`,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         method: "GET",
       }),
@@ -70,10 +59,10 @@ const settingAPI = baseApi.injectEndpoints({
 
     setPrivacyPolicy: builder.mutation({
       query: (data) => ({
-        url: `/api-apps/privacy_policies/`,
-        method: "PUT",
+        url: `/setting/update/privacy`,
+        method: "PATCH",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: data,
       }),
@@ -103,7 +92,6 @@ const settingAPI = baseApi.injectEndpoints({
 });
 
 export const {
-  useGetProfileQuery,
   useUpdateProfileMutation,
   useUpdatePasswordMutation,
   useGetTermsAndConditionsQuery,

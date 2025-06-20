@@ -38,14 +38,15 @@ const EditPrivacyPolicy = () => {
       if (editorRef.current && !editorRef.current.querySelector(".ql-editor")) {
         const quill = new Quill(editorRef.current, {
           theme: "snow",
-          placeholder: "Enter your Terms and Conditions...",
+          placeholder: "Edit your Privacy Policy...",
         });
 
         quillRef.current = quill;
 
-        if (privacyPolicy?.data[0]?.content) {
-          quill.root.innerHTML = privacyPolicy?.data[0]?.content || "";
-          setContent(privacyPolicy?.data[0]?.content || "");
+        // Load description from fetched data
+        if (privacyPolicy?.data[0]?.description) {
+          quill.root.innerHTML = privacyPolicy?.data[0]?.description || "";
+          setContent(privacyPolicy?.data[0]?.description || "");
         }
 
         quill.on("text-change", () => {
@@ -63,49 +64,59 @@ const EditPrivacyPolicy = () => {
     };
   }, [privacyPolicy]);
 
-  if (isLoading && !privacyPolicy && !quillRef.current) {
+  if (isLoading) {
     return (
-      <div className='flex justify-center items-center min-h-screen'>
-        <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-200'></div>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-200"></div>
       </div>
     );
   }
 
   const handleSubmit = async () => {
     try {
-      const res = await setPrivacyPolicy({ content:  content }).unwrap();
+      // Send description to match the API response field
+      const res = await setPrivacyPolicy({ description: content }).unwrap();
 
-      if (res?.status === "success") {
-        refetch();
-        toast.success("Terms and Conditions saved successfully!");
+      if (res?.success === true) {
+        refetch(); // Refresh the data to reflect the update
+        toast.success("Privacy Policy updated successfully!");
         router.push("/setting/privacy-policy");
       } else {
-        toast.error("Failed to save.");
+        toast.error("Failed to update Privacy Policy.");
       }
-    } catch {
-      toast.error("Save failed.");
+    } catch (error) {
+      toast.error("Update failed. Please try again.");
+      console.error("Update error:", error);
     }
   };
 
   return (
-    <div className='min-h-[75vh] w-[96%] mx-auto flex flex-col justify-between gap-6'>
-      <div className='space-y-6'>
-        <div className='h-auto'>
+    <div className="min-h-[75vh] w-[96%] mx-auto flex flex-col justify-between gap-6">
+      <div className="space-y-6">
+        {/* Display raw description */}
+        <div className="my-4">
+          <h3 className="text-lg font-semibold">Current Privacy Policy:</h3>
+          <p className="text-gray-600">
+            {privacyPolicy?.data[0]?.description || "No description available"}
+          </p>
+        </div>
+
+        <div className="h-auto">
           <div
             ref={editorRef}
-            className='h-[50vh] bg-white text-base'
-            id='quill-editor'
+            className="h-[50vh] bg-white text-base border rounded-md"
+            id="quill-editor"
           />
         </div>
       </div>
 
-      <div className='flex justify-end'>
+      <div className="flex justify-end">
         <Button
           onClick={handleSubmit}
           disabled={isSaving}
-          className='bg-primary hover:bg-teal-700'
+          className="bg-primary hover:bg-teal-700"
         >
-          {isSaving ? "Saving..." : "Save Content"}
+          {isSaving ? "Saving..." : "Update Privacy Policy"}
         </Button>
       </div>
     </div>

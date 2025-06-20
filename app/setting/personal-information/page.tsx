@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Edit } from "lucide-react";
-import { useGetProfileQuery } from "@/redux/feature/settingAPI";
+
 import { useEffect, useState } from "react";
 import { useGetUserProfileQuery } from "@/redux/feature/userAPI";
 import Loading from "@/components/Loading";

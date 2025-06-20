@@ -60,13 +60,13 @@ const EditAboutUs = () => {
   }, []);
 
   return (
-    <div className='min-h-[75vh] w-[96%] mx-auto flex flex-col justify-between gap-6'>
-      <div className='space-y-6'>
-        <div className='h-full'>
-          <div id='editor' className='h-[50vh] bg-white text-base' />
+    <div className="min-h-[75vh] w-[96%] mx-auto flex flex-col justify-between gap-6">
+      <div className="space-y-6">
+        <div className="h-full">
+          <div id="editor" className="h-[50vh] bg-white text-base" />
         </div>
       </div>
-      <div className='flex justify-end'></div>
+      <div className="flex justify-end"></div>
     </div>
   );
 };

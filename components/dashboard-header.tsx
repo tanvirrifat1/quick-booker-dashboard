@@ -2,16 +2,14 @@
 
 import { Bell } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useGetProfileQuery } from "@/redux/feature/settingAPI";
 import { useGetUserProfileQuery } from "@/redux/feature/userAPI";
 
 export default function DashboardHeader() {
   const pathname = usePathname();
-  const { data: userProfile, isLoading } = useGetUserProfileQuery("");
+  const { data: userProfile } = useGetUserProfileQuery("");
 
   if (
     pathname === "/signin" ||
@@ -23,8 +21,6 @@ export default function DashboardHeader() {
   ) {
     return null;
   }
-
-  console.log(userProfile);
 
   return (
     <header className="w-[98%] mx-auto sticky top-0 z-20 flex h-[72px] items-center justify-between bg-gradient-to-br from-blue-600 via-blue-500 to-teal-400 px-4 text-white rounded md:px-6 my-6">
