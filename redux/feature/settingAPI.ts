@@ -70,6 +70,18 @@ const settingAPI = baseApi.injectEndpoints({
         providesTags: ["AboutUs"],
       }),
     }),
+
+    updateAboutUs: builder.mutation({
+      query: (data) => ({
+        url: `/setting/update/about`,
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: data,
+        invalidatesTags: ["AboutUs"],
+      }),
+    }),
   }),
 });
 
@@ -80,4 +92,5 @@ export const {
   useGetPrivacyPolicyQuery,
   useSetPrivacyPolicyMutation,
   useGetAboutUsQuery,
+  useUpdateAboutUsMutation,
 } = settingAPI;
