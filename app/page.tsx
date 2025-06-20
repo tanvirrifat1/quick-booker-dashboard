@@ -19,16 +19,37 @@ import icons from "@/public/icon/user.png";
 
 import ear from "@/public/icon/earning.png";
 import EarningChart from "@/components/EarningChart";
+import { useGetStatisticsQuery } from "@/redux/feature/dashboardAPI";
+import Loading from "@/components/Loading";
 
 export default function DashboardContent() {
+  const { data, isLoading } = useGetStatisticsQuery();
+
+  console.log(data);
+
+  if (isLoading)
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+
   return (
     <main className="bg-background2 w-full p-4 md:p-6">
       <section className="mb-8">
         {/* <h2 className='mb-4 text-[32px] font-medium text-primary'>Overview</h2> */}
         <div>
           <div className="flex items-center gap-14 flex-wrap">
-            <StatCard title="Total User" value="520" icon={icons as any} />
-            <StatCard title="Total Earnings" value="$12300" icon={ear as any} />
+            <StatCard
+              title="Total User"
+              value={data?.data?.totalUsers}
+              icon={icons as any}
+            />
+            <StatCard
+              title="Total Earnings"
+              value={`$${data?.data?.totalAmount}`}
+              icon={ear as any}
+            />
           </div>
         </div>
       </section>
@@ -215,7 +236,7 @@ function TransactionTable() {
             </TableHeader>
 
             <TableBody>
-              {currentTransactions.map((transaction) => (
+              {currentTransactions?.map((transaction) => (
                 <TableRow key={transaction.id}>
                   <TableCell className="font-medium text-lg text-[#4B5563] text-center">
                     {transaction.id}
