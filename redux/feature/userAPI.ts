@@ -12,11 +12,11 @@ const authAPI = baseApi.injectEndpoints({
       }),
     }),
 
-    getUserById: builder.query<any, string>({
-      query: (id) => ({
-        url: `/api-auth/single_user/${id}`,
+    getUserProfile: builder.query<any, string>({
+      query: () => ({
+        url: `/user/profile`,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         method: "GET",
       }),
@@ -24,4 +24,4 @@ const authAPI = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetAllUsersQuery, useGetUserByIdQuery } = authAPI;
+export const { useGetAllUsersQuery, useGetUserProfileQuery } = authAPI;
