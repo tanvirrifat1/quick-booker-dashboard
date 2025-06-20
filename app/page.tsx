@@ -12,15 +12,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import UserDetailsModal from "@/components/user-details-modal";
 import Image from "next/image";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import icons from "@/public/icon/user.png";
-
 import ear from "@/public/icon/earning.png";
 import EarningChart from "@/components/EarningChart";
-import { useGetStatisticsQuery } from "@/redux/feature/dashboardAPI";
+import {
+  useGetStatisticsQuery,
+  useGetTransactionsQuery,
+} from "@/redux/feature/dashboardAPI";
 import Loading from "@/components/Loading";
+import UserDetailsModal from "@/components/user-details-modal";
 
 export default function DashboardContent() {
   const { data, isLoading } = useGetStatisticsQuery();
@@ -35,7 +43,6 @@ export default function DashboardContent() {
   return (
     <main className="bg-background2 w-full p-4 md:p-6">
       <section className="mb-8">
-        {/* <h2 className='mb-4 text-[32px] font-medium text-primary'>Overview</h2> */}
         <div>
           <div className="flex items-center gap-14 flex-wrap">
             <StatCard
@@ -93,106 +100,28 @@ function StatCard({ title, value, icon }: StatCardProps) {
 
 function TransactionTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // Configurable items per page
+  const [itemsPerPage] = useState(10);
 
-  const transactions = [
-    {
-      id: 447,
-      name: "Marvin McKinney",
-      subscription: "Basic",
-      date: "1 Feb, 2020",
-      amount: "$45",
-    },
-    {
-      id: 426,
-      name: "Jane Cooper",
-      subscription: "Premium",
-      date: "21 Sep, 2020",
-      amount: "$75",
-    },
-    {
-      id: 922,
-      name: "Esther Howard",
-      subscription: "Basic",
-      date: "24 May, 2020",
-      amount: "$45",
-    },
-    {
-      id: 816,
-      name: "Darlene Robertson",
-      subscription: "Premium",
-      date: "24 May, 2020",
-      amount: "$75",
-    },
-    {
-      id: 185,
-      name: "Cameron Williamson",
-      subscription: "Basic",
-      date: "17 Oct, 2020",
-      amount: "$45",
-    },
-    {
-      id: 738,
-      name: "Ronald Richards",
-      subscription: "Basic",
-      date: "1 Feb, 2020",
-      amount: "$45",
-    },
-    {
-      id: 600,
-      name: "Jerome Bell",
-      subscription: "Premium",
-      date: "21 Sep, 2020",
-      amount: "$75",
-    },
-    {
-      id: 583,
-      name: "Dianne Russell",
-      subscription: "Basic",
-      date: "8 Sep, 2020",
-      amount: "$45",
-    },
-    {
-      id: 177,
-      name: "Bessie Cooper",
-      subscription: "Basic",
-      date: "21 Sep, 2020",
-      amount: "$45",
-    },
-    {
-      id: 826,
-      name: "Robert Fox",
-      subscription: "Premium",
-      date: "22 Oct, 2020",
-      amount: "$75",
-    },
-    {
-      id: 540,
-      name: "Kathryn Murphy",
-      subscription: "Basic",
-      date: "17 Oct, 2020",
-      amount: "$45",
-    },
-    {
-      id: 274,
-      name: "Leslie Alexander",
-      subscription: "Premium",
-      date: "17 Oct, 2020",
-      amount: "$75",
-    },
-  ];
+  const { data, isLoading } = useGetTransactionsQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+  });
 
-  // Calculate pagination
-  const totalPages = Math.ceil(transactions.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentTransactions = transactions.slice(startIndex, endIndex);
-  const [selectedYear, setSelectedYear] = useState("2025");
-  const [chartData, setChartData] = useState<
-    { month: string; amount: number }[]
-  >([]);
+  // Map API data to the expected structure
+  const transactions =
+    data?.data?.result?.map((item: any) => ({
+      id: item.id || item.transactionId, // Adjust based on actual API field names
+      name: item.user?.name || "Unknown User", // Adjust based on actual API field names
+      status: item.status || "Unknown", // Adjust based on actual API field names
+      date: item.createdAt || item.date, // Adjust based on actual API field names, format if needed
+      amount: `$${item.amount || 0}`, // Adjust based on actual API field names
+    })) || [];
+
+  // Use meta.total for pagination
+  const totalPages = Math.ceil((data?.data?.meta?.total || 0) / itemsPerPage);
+  const currentTransactions = transactions.slice(0, itemsPerPage); // Already paginated by API, but slice for safety
 
   const openUserModal = (user: any) => {
     setSelectedUser(user);
@@ -204,6 +133,10 @@ function TransactionTable() {
       setCurrentPage(page);
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -222,19 +155,22 @@ function TransactionTable() {
                   User Name
                 </TableHead>
                 <TableHead className="text-[#FFFFFF] text-lg text-center">
-                  Subscription
+                  Status
                 </TableHead>
                 <TableHead className="text-[#FFFFFF] text-lg text-center">
-                  Join Date
+                  Date
                 </TableHead>
                 <TableHead className="text-[#FFFFFF] text-lg text-center">
-                  Action
+                  Amount
+                </TableHead>
+                <TableHead className="text-[#FFFFFF] text-lg text-center">
+                  Details
                 </TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {currentTransactions?.map((transaction) => (
+              {currentTransactions?.map((transaction: any) => (
                 <TableRow key={transaction.id}>
                   <TableCell className="font-medium text-lg text-[#4B5563] text-center">
                     {transaction.id}
@@ -243,10 +179,13 @@ function TransactionTable() {
                     {transaction.name}
                   </TableCell>
                   <TableCell className="text-lg text-[#4B5563] text-center">
-                    {transaction.subscription}
+                    {transaction.status}
                   </TableCell>
                   <TableCell className="text-lg text-[#4B5563] text-center">
-                    {transaction.date}
+                    {transaction.date.slice(0, 10)}
+                  </TableCell>
+                  <TableCell className="text-lg text-[#4B5563] text-center">
+                    {transaction.amount}
                   </TableCell>
                   <TableCell className="text-lg text-[#4B5563] text-center">
                     <Button

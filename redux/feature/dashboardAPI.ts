@@ -21,7 +21,21 @@ const dashboardAPI = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    getTransactions: builder.query({
+      query: ({ page = 1, limit = 10 }) => ({
+        url: `/payment/get-all-payments?page=${page}&limit=${limit}`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetStatisticsQuery, useGetEarningQuery } = dashboardAPI;
+export const {
+  useGetStatisticsQuery,
+  useGetEarningQuery,
+  useGetTransactionsQuery,
+} = dashboardAPI;
