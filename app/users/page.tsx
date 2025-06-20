@@ -324,9 +324,12 @@ function TransactionTable() {
             {selectedUser?.image && (
               <div className="flex justify-center mb-4">
                 <img
-                  src={selectedUser.image}
+                  src={
+                    selectedUser?.image &&
+                    `${process.env.NEXT_PUBLIC_IMAGE_URL}${selectedUser?.image}`
+                  }
                   alt={selectedUser.name}
-                  className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md"
+                  className="w-36 h-36 rounded-full object-cover border-4 border-white shadow-md"
                 />
               </div>
             )}
@@ -338,10 +341,13 @@ function TransactionTable() {
 
             {/* User Details */}
             <div className="space-y-6">
-              <DetailRow label="User ID:" value={selectedUser?.id} />
               <DetailRow label="User Name" value={selectedUser?.name} />
               <DetailRow label="Phone Number" value={selectedUser?.phone} />
-              <DetailRow label="Join Date" value={selectedUser?.date} />
+              <DetailRow
+                label="Join Date"
+                value={selectedUser?.createdAt.slice(0, 10)}
+              />
+              <DetailRow label="Email" value={selectedUser?.email} />
             </div>
 
             {/* Okay Button */}

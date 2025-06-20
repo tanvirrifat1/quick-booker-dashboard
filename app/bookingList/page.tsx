@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/table";
 import { useState } from "react";
 import DetailRow from "@/components/DetailRow";
+import { useGetAllBookingsQuery } from "@/redux/feature/bookingListAPI";
+import Loading from "@/components/Loading";
 
 export default function DashboardContent() {
   return (
@@ -29,275 +31,17 @@ function TransactionTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // Cleaned-up bookings array with unique IDs
-  const bookings = [
-    {
-      id: 427,
-      courtName: "Central Park Court",
-      price: "$75",
-      address: "123 Main St, Cityville",
-      date: "21 Sep, 2020",
-      time: "10:00 AM",
-      user: {
-        name: "Jane Cooper",
-        phone: "+1 (555) 123-0426",
-        image: "https://via.placeholder.com/48?text=JC",
-      },
-    },
-    {
-      id: 426,
-      courtName: "Riverside Court",
-      price: "$60",
-      address: "456 River Rd, Townsville",
-      date: "22 Sep, 2020",
-      time: "2:00 PM",
-      user: {
-        name: "Esther Howard",
-        phone: "+1 (555) 123-0922",
-        image: "https://via.placeholder.com/48?text=EH",
-      },
-    },
-    {
-      id: 425,
-      courtName: "Sunny Hills Court",
-      price: "$80",
-      address: "789 Sunny Rd, Hilltown",
-      date: "23 Sep, 2020",
-      time: "4:00 PM",
-      user: {
-        name: "Michael Smith",
-        phone: "+1 (555) 123-4567",
-        image: "https://via.placeholder.com/48?text=MS",
-      },
-    },
-    {
-      id: 424,
-      courtName: "Downtown Arena",
-      price: "$70",
-      address: "101 City Rd, Downtown",
-      date: "24 Sep, 2020",
-      time: "6:00 PM",
-      user: {
-        name: "Alice Johnson",
-        phone: "+1 (555) 123-7890",
-        image: "https://via.placeholder.com/48?text=AJ",
-      },
-    },
-    {
-      id: 423,
-      courtName: "Lakeside Court",
-      price: "$65",
-      address: "321 Lake Dr, Lakeside",
-      date: "25 Sep, 2020",
-      time: "11:00 AM",
-      user: {
-        name: "Robert Brown",
-        phone: "+1 (555) 123-3210",
-        image: "https://via.placeholder.com/48?text=RB",
-      },
-    },
-    {
-      id: 422,
-      courtName: "Greenfield Court",
-      price: "$85",
-      address: "654 Green St, Greenfield",
-      date: "26 Sep, 2020",
-      time: "3:00 PM",
-      user: {
-        name: "Sarah Davis",
-        phone: "+1 (555) 123-6543",
-        image: "https://via.placeholder.com/48?text=SD",
-      },
-    },
-    {
-      id: 421,
-      courtName: "Oakwood Court",
-      price: "$90",
-      address: "987 Oak Ave, Oakwood",
-      date: "27 Sep, 2020",
-      time: "5:00 PM",
-      user: {
-        name: "David Wilson",
-        phone: "+1 (555) 123-9876",
-        image: "https://via.placeholder.com/48?text=DW",
-      },
-    },
-    {
-      id: 420,
-      courtName: "Maple Park Court",
-      price: "$55",
-      address: "147 Maple Rd, Maple Park",
-      date: "28 Sep, 2020",
-      time: "9:00 AM",
-      user: {
-        name: "Emily Taylor",
-        phone: "+1 (555) 123-1478",
-        image: "https://via.placeholder.com/48?text=ET",
-      },
-    },
-    {
-      id: 419,
-      courtName: "Hilltop Court",
-      price: "$75",
-      address: "258 Hill Rd, Hilltop",
-      date: "29 Sep, 2020",
-      time: "1:00 PM",
-      user: {
-        name: "James Anderson",
-        phone: "+1 (555) 123-2589",
-        image: "https://via.placeholder.com/48?text=JA",
-      },
-    },
-    {
-      id: 418,
-      courtName: "Cedar Court",
-      price: "$60",
-      address: "369 Cedar St, Cedarville",
-      date: "30 Sep, 2020",
-      time: "7:00 PM",
-      user: {
-        name: "Olivia Martinez",
-        phone: "+1 (555) 123-3690",
-        image: "https://via.placeholder.com/48?text=OM",
-      },
-    },
-    {
-      id: 417,
-      courtName: "Pinewood Court",
-      price: "$70",
-      address: "741 Pine Rd, Pinewood",
-      date: "01 Oct, 2020",
-      time: "12:00 PM",
-      user: {
-        name: "William Clark",
-        phone: "+1 (555) 123-7412",
-        image: "https://via.placeholder.com/48?text=WC",
-      },
-    },
-    {
-      id: 416,
-      courtName: "Valley Court",
-      price: "$80",
-      address: "852 Valley Dr, Valleyview",
-      date: "02 Oct, 2020",
-      time: "2:00 PM",
-      user: {
-        name: "Sophia Lewis",
-        phone: "+1 (555) 123-8523",
-        image: "https://via.placeholder.com/48?text=SL",
-      },
-    },
-    {
-      id: 415,
-      courtName: "Meadow Court",
-      price: "$65",
-      address: "963 Meadow Ln, Meadowtown",
-      date: "03 Oct, 2020",
-      time: "4:00 PM",
-      user: {
-        name: "Liam Walker",
-        phone: "+1 (555) 123-9634",
-        image: "https://via.placeholder.com/48?text=LW",
-      },
-    },
-    {
-      id: 414,
-      courtName: "Harbor Court",
-      price: "$85",
-      address: "159 Harbor Rd, Harbortown",
-      date: "04 Oct, 2020",
-      time: "6:00 PM",
-      user: {
-        name: "Ava Harris",
-        phone: "+1 (555) 123-1596",
-        image: "https://via.placeholder.com/48?text=AH",
-      },
-    },
-    {
-      id: 413,
-      courtName: "Elmwood Court",
-      price: "$70",
-      address: "753 Elm St, Elmwood",
-      date: "05 Oct, 2020",
-      time: "10:00 AM",
-      user: {
-        name: "Noah Young",
-        phone: "+1 (555) 123-7531",
-        image: "https://via.placeholder.com/48?text=NY",
-      },
-    },
-    {
-      id: 412,
-      courtName: "Starlight Court",
-      price: "$75",
-      address: "864 Star Rd, Starlight",
-      date: "06 Oct, 2020",
-      time: "3:00 PM",
-      user: {
-        name: "Mia King",
-        phone: "+1 (555) 123-8642",
-        image: "https://via.placeholder.com/48?text=MK",
-      },
-    },
-    {
-      id: 411,
-      courtName: "Crestwood Court",
-      price: "$60",
-      address: "975 Crest Rd, Crestwood",
-      date: "07 Oct, 2020",
-      time: "5:00 PM",
-      user: {
-        name: "Ethan Scott",
-        phone: "+1 (555) 123-9753",
-        image: "https://via.placeholder.com/48?text=ES",
-      },
-    },
-    {
-      id: 410,
-      courtName: "Brookside Court",
-      price: "$80",
-      address: "186 Brook Rd, Brookside",
-      date: "08 Oct, 2020",
-      time: "11:00 AM",
-      user: {
-        name: "Isabella Green",
-        phone: "+1 (555) 123-1864",
-        image: "https://via.placeholder.com/48?text=IG",
-      },
-    },
-    {
-      id: 409,
-      courtName: "Westend Court",
-      price: "$65",
-      address: "297 West Rd, Westend",
-      date: "09 Oct, 2020",
-      time: "1:00 PM",
-      user: {
-        name: "Mason Adams",
-        phone: "+1 (555) 123-2975",
-        image: "https://via.placeholder.com/48?text=MA",
-      },
-    },
-    {
-      id: 408,
-      courtName: "Skyline Court",
-      price: "$90",
-      address: "408 Skyline Dr, Skylinetown",
-      date: "10 Oct, 2020",
-      time: "7:00 PM",
-      user: {
-        name: "Charlotte Baker",
-        phone: "+1 (555) 123-4086",
-        image: "https://via.placeholder.com/48?text=CB",
-      },
-    },
-  ];
+  const { data, isLoading } = useGetAllBookingsQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+  });
 
-  // Pagination calculations
-  const totalPages = Math.ceil(bookings.length / itemsPerPage);
+  const bookings = data?.data?.result;
+
+  const totalPages = Math.ceil(bookings?.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, bookings.length);
-  const currentTransactions = bookings.slice(startIndex, endIndex);
+  const endIndex = Math.min(startIndex + itemsPerPage, bookings?.length);
+  const currentTransactions = bookings?.slice(startIndex, endIndex);
 
   const openUserModal = (user: any) => {
     setSelectedUser(user);
@@ -310,6 +54,14 @@ function TransactionTable() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="overflow-hidden bg-white rounded-md">
@@ -321,7 +73,7 @@ function TransactionTable() {
             <TableHeader className="bg-gradient-to-br from-blue-600 via-blue-500 to-teal-400 text-black py-8">
               <TableRow>
                 <TableHead className="text-[#FFF] text-lg text-center">
-                  Booking ID
+                  Court Image
                 </TableHead>
                 <TableHead className="text-[#FFF] text-lg text-center">
                   Court Name
@@ -339,26 +91,38 @@ function TransactionTable() {
                   Time
                 </TableHead>
                 <TableHead className="text-[#FFF] text-lg text-center">
+                  Status
+                </TableHead>
+                <TableHead className="text-[#FFF] text-lg text-center">
                   User Details
                 </TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {currentTransactions.length > 0 ? (
-                currentTransactions.map((booking) => (
+              {currentTransactions?.length > 0 ? (
+                currentTransactions?.map((booking: any) => (
                   <TableRow key={booking.id}>
                     <TableCell className="text-center text-black text-lg">
-                      {booking.id}
+                      <div className="flex items-center justify-center gap-2">
+                        <img
+                          src={
+                            process.env.NEXT_PUBLIC_IMAGE_URL +
+                            booking?.court?.image
+                          }
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="text-center text-black text-lg">
+                      {booking?.court?.name}
                     </TableCell>
                     <TableCell className="text-center text-black text-lg">
-                      {booking.courtName}
+                      {booking?.court?.price}
                     </TableCell>
                     <TableCell className="text-center text-black text-lg">
-                      {booking.price}
-                    </TableCell>
-                    <TableCell className="text-center text-black text-lg">
-                      {booking.address}
+                      {booking?.court?.address}
                     </TableCell>
                     <TableCell className="text-center text-black text-lg">
                       {booking.date}
@@ -366,6 +130,11 @@ function TransactionTable() {
                     <TableCell className="text-center text-black text-lg">
                       {booking.time}
                     </TableCell>
+
+                    <TableCell className="text-center text-black text-lg">
+                      {booking.pending ? "⏳ Pending" : "✅ Confirmed"}
+                    </TableCell>
+
                     <TableCell className="text-center text-black text-lg">
                       <Button
                         variant="ghost"
@@ -482,11 +251,11 @@ function TransactionTable() {
             </button>
 
             {/* User Image */}
-            {selectedUser?.image && (
+            {selectedUser && (
               <div className="flex justify-center mb-4">
                 <img
-                  src={selectedUser.image}
-                  alt={selectedUser.name}
+                  src={process.env.NEXT_PUBLIC_IMAGE_URL + selectedUser.image}
+                  alt={selectedUser?.name}
                   className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md"
                 />
               </div>
@@ -499,12 +268,17 @@ function TransactionTable() {
 
             {/* User Details */}
             <div className="space-y-6">
-              <DetailRow label="User ID:" value={selectedUser?.id || "N/A"} />
-              <DetailRow label="User Name" value={selectedUser?.name} />
-              <DetailRow label="Phone Number" value={selectedUser?.phone} />
+              <DetailRow
+                label="User Name"
+                value={selectedUser?.name || "N/A"}
+              />
+              <DetailRow
+                label="Phone Number"
+                value={selectedUser?.phone || "N/A"}
+              />
               <DetailRow
                 label="Join Date"
-                value={selectedUser?.date || "N/A"}
+                value={selectedUser?.email || "N/A"}
               />
             </div>
 
