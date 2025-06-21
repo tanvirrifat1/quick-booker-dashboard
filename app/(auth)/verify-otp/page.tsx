@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 
 import logo from "@/public/banner.png";
+import { useVerifyEmailMutation } from "@/redux/feature/settingAPI";
+import { useRouter } from "next/navigation";
 
 export default function VerifyOTP() {
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
@@ -19,12 +21,16 @@ export default function VerifyOTP() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [email, setEmail] = useState("");
 
+  const router = useRouter();
+
+  const [verify] = useVerifyEmailMutation();
+
   const emailFromQuery =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("email")
       : null;
 
-  console.log(emailFromQuery);
+  // console.log(emailFromQuery);
 
   // Handle input change and auto-focus to next input
   const handleChange = (index: number, value: string) => {
@@ -85,6 +91,22 @@ export default function VerifyOTP() {
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const res = await verify({
+        email: emailFromQuery,
+        oneTimeCode: Number(otpValue),
+      }).unwrap();
+
+      if (res.success === true) {
+        localStorage.setItem("accessToken", res.data.accessToken);
+        router.push("/reset-password");
+      }
+
+      if (res?.success === false) {
+        toast.error("The OTP you entered is incorrect or has expired");
+        return;
+      }
+
       toast.success("OTP verified successfully!");
       // Handle success - redirect or update state
     } catch (error) {

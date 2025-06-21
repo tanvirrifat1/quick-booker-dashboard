@@ -3,18 +3,6 @@ import baseApi from "../api/baseAPI";
 
 const settingAPI = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    updateProfile: builder.mutation({
-      query: (data) => ({
-        url: `/api-auth/update_profile/`,
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: data,
-      }),
-      invalidatesTags: ["Profile"],
-    }),
-
     updatePassword: builder.mutation({
       query: (data) => ({
         url: `/auth/change-password`,
@@ -82,15 +70,45 @@ const settingAPI = baseApi.injectEndpoints({
         invalidatesTags: ["AboutUs"],
       }),
     }),
+
+    forgetPassword: builder.mutation({
+      query: (data) => ({
+        url: `/auth/forgot-password`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    verifyEmail: builder.mutation({
+      query: (data) => ({
+        url: `/auth/verify-email`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    resetPassword: builder.mutation({
+      query: (data) => ({
+        url: `/auth/reset-password`,
+        method: "POST",
+        body: data,
+
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }),
+    }),
   }),
 });
 
 export const {
-  useUpdateProfileMutation,
   useUpdatePasswordMutation,
   useSetTermsAndConditionsMutation,
   useGetPrivacyPolicyQuery,
   useSetPrivacyPolicyMutation,
   useGetAboutUsQuery,
   useUpdateAboutUsMutation,
+  useForgetPasswordMutation,
+  useVerifyEmailMutation,
+  useResetPasswordMutation,
 } = settingAPI;

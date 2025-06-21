@@ -10,12 +10,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import logos from "@/public/banner.png";
+import { useForgetPasswordMutation } from "@/redux/feature/settingAPI";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const [forget] = useForgetPasswordMutation();
 
   const router = useRouter();
   const validateEmail = (email: string) => {
@@ -42,7 +45,16 @@ export default function ForgotPasswordPage() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
       setIsSuccess(true);
-      router.push("/verify-otp?email=" + email);
+
+      // await forget(email);
+
+      const res = await forget({
+        email,
+      }).unwrap();
+
+      if (res.success === true) {
+        router.push("/verify-otp?email=" + email);
+      }
     } catch (error) {
       setError("Failed to send OTP. Please try again.");
     } finally {
@@ -162,7 +174,7 @@ export default function ForgotPasswordPage() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={handleEmailChange}
-                  className={`pl-10 h-12 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 text-gray-900 placeholder:text-gray-500 ${
+                  className={`pl-10 h-12 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 text-gray-900 placeholder:text-gray-500 ${
                     error ? "border-red-500" : ""
                   }`}
                 />

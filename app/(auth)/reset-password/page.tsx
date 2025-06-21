@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
 import logo from "@/public/banner.png";
+import { useResetPasswordMutation } from "@/redux/feature/settingAPI";
+import { useRouter } from "next/navigation";
 
 export default function CreatePasswordPage() {
   const [formData, setFormData] = useState({
@@ -16,6 +18,12 @@ export default function CreatePasswordPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const router = useRouter();
+
+  const token = localStorage.getItem("accessToken");
+
+  const [resetPassword] = useResetPasswordMutation();
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -66,7 +74,19 @@ export default function CreatePasswordPage() {
       // Simulate API call to update password
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // In a real app, redirect to dashboard or login page after success
+      const res = await resetPassword({
+        token,
+        newPassword: formData.newPassword,
+        confirmPassword: formData.newPassword,
+      }).unwrap();
+
+      if (res?.success === true) {
+        router.push("/signin");
+      }
+
+      if (res?.success === false) {
+        setErrors({ submit: res?.message || "Failed to update password" });
+      }
     } catch (error) {
       console.error("Error updating password:", error);
       setErrors({ submit: "An error occurred. Please try again." });

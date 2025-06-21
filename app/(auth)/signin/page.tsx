@@ -76,8 +76,6 @@ export default function SignInPage() {
         password: formData.password,
       }).unwrap();
 
-      console.log(res);
-
       if (res?.success === true) {
         localStorage.setItem("accessToken", res?.data?.accessToken);
         await saveTokens(res?.data?.accessToken);
