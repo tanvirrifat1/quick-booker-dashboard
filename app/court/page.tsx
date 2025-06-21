@@ -105,7 +105,12 @@ export default function CourtPage() {
                       Slot Duration: {court.slotTime}
                     </p>
                     <p className="text-sm text-gray-600 mb-2 font-semibold">
-                      Status: {court.isDeleted ? "Deleted" : "Active"}
+                      Status:{" "}
+                      {court.isDeleted ? (
+                        <span className="text-red-600">Deleted</span>
+                      ) : (
+                        <span className="text-green-600">Active</span>
+                      )}
                     </p>
                     {/* Available Slots Mapping */}
                     <div className="text-sm text-gray-600">
