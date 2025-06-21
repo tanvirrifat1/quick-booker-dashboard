@@ -10,8 +10,19 @@ const courtAPI = baseApi.injectEndpoints({
         },
         method: "GET",
       }),
+      providesTags: ["Court"],
+    }),
+    deleteCourt: builder.mutation<any, string>({
+      query: (courtId) => ({
+        url: `/court/delete-court/${courtId}`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Court"],
     }),
   }),
 });
 
-export const { useGetAllCourtQuery } = courtAPI;
+export const { useGetAllCourtQuery, useDeleteCourtMutation } = courtAPI;

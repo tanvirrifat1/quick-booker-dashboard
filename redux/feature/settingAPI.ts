@@ -12,7 +12,7 @@ const settingAPI = baseApi.injectEndpoints({
         },
         body: data,
       }),
-      invalidatesTags: ["Profile"],
+      invalidatesTags: ["Settings"],
     }),
 
     getProfile: builder.query({
@@ -22,8 +22,8 @@ const settingAPI = baseApi.injectEndpoints({
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         method: "GET",
-        providesTags: ["Profile"],
       }),
+      providesTags: ["Settings"],
     }),
 
     updatePassword: builder.mutation({
@@ -35,17 +35,7 @@ const settingAPI = baseApi.injectEndpoints({
         },
         body: data,
       }),
-    }),
-
-    setTermsAndConditions: builder.mutation({
-      query: (data) => ({
-        url: `/dicipline/terms-conditions/`,
-        method: "PUT",
-        body: data,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }),
+      invalidatesTags: ["Settings"],
     }),
 
     getPrivacyPolicy: builder.query({
@@ -55,7 +45,7 @@ const settingAPI = baseApi.injectEndpoints({
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         method: "GET",
-        providesTags: ["Privacy"],
+        providesTags: ["Settings"],
       }),
     }),
 
@@ -67,7 +57,7 @@ const settingAPI = baseApi.injectEndpoints({
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: data,
-        invalidatesTags: ["Privacy"],
+        invalidatesTags: ["Settings"],
       }),
     }),
 
@@ -78,7 +68,7 @@ const settingAPI = baseApi.injectEndpoints({
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         method: "GET",
-        providesTags: ["AboutUs"],
+        providesTags: ["Settings"],
       }),
     }),
 
@@ -90,7 +80,7 @@ const settingAPI = baseApi.injectEndpoints({
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: data,
-        invalidatesTags: ["AboutUs"],
+        invalidatesTags: ["Settings"],
       }),
     }),
 
@@ -100,6 +90,7 @@ const settingAPI = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Settings"],
     }),
 
     verifyEmail: builder.mutation({
@@ -108,6 +99,7 @@ const settingAPI = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Settings"],
     }),
 
     resetPassword: builder.mutation({
@@ -120,6 +112,7 @@ const settingAPI = baseApi.injectEndpoints({
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       }),
+      invalidatesTags: ["Settings"],
     }),
   }),
 });
@@ -127,7 +120,6 @@ const settingAPI = baseApi.injectEndpoints({
 export const {
   useUpdateProfileMutation,
   useUpdatePasswordMutation,
-  useSetTermsAndConditionsMutation,
   useGetPrivacyPolicyQuery,
   useSetPrivacyPolicyMutation,
   useGetAboutUsQuery,

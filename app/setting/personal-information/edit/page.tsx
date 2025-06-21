@@ -29,7 +29,7 @@ export default function PersonalInformationEditPage() {
 
   const router = useRouter();
 
-  const { data: userProfile, isLoading } = useGetProfileQuery("");
+  const { data: userProfile, isLoading, refetch } = useGetProfileQuery("");
   const [updateProfile] = useUpdateProfileMutation();
 
   useEffect(() => {

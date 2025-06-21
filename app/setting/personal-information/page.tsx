@@ -16,7 +16,7 @@ export default function PersonalInformationPage() {
     profileImage: "",
   });
 
-  const { data: userProfile, isLoading } = useGetUserProfileQuery("");
+  const { data: userProfile, isLoading, refetch } = useGetUserProfileQuery("");
 
   useEffect(() => {
     if (userProfile) {

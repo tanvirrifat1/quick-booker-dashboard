@@ -3,9 +3,13 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useGetAllCourtQuery } from "@/redux/feature/courtAPI";
+import {
+  useDeleteCourtMutation,
+  useGetAllCourtQuery,
+} from "@/redux/feature/courtAPI";
 import { useState } from "react";
 import Loading from "@/components/Loading";
+import { toast } from "sonner";
 
 export default function CourtPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,6 +20,8 @@ export default function CourtPage() {
     page: currentPage,
     limit: itemsPerPage,
   });
+
+  const [deleteCourt] = useDeleteCourtMutation();
 
   // Calculate total pages based on the API response
   const totalItems = data?.data?.meta?.total || 0;
@@ -28,6 +34,14 @@ export default function CourtPage() {
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+    }
+  };
+
+  const handleDeleteCourt = async (courtId: string) => {
+    const res = await deleteCourt(courtId).unwrap();
+
+    if (res?.success === true) {
+      toast.success("Court deleted successfully!");
     }
   };
 
@@ -126,6 +140,7 @@ export default function CourtPage() {
                     </Button>
                     <Button
                       variant="ghost"
+                      onClick={() => handleDeleteCourt(court._id)}
                       size="sm"
                       className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 h-auto font-medium"
                     >

@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Plus, X, MapPin, DollarSign, Clock, Calendar } from "lucide-react";
 import { toast, Toaster } from "sonner";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import Link from "next/link";
 
 interface TimeSlot {
   time: string;
@@ -228,7 +230,12 @@ export default function VenueForm() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <Card className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white">
-        <CardHeader>
+        <CardHeader className="flex flex-row ">
+          <Link href="/court">
+            <p className="text-sm font-medium">
+              <IoMdArrowRoundBack className="h-6 w-6 mt-2 mr-2" />
+            </p>
+          </Link>
           <CardTitle className="text-2xl font-bold">Update Court</CardTitle>
         </CardHeader>
       </Card>
