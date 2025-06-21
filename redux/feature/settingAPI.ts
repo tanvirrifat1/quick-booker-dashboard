@@ -5,7 +5,7 @@ const settingAPI = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     updateProfile: builder.mutation({
       query: (data) => ({
-        url: `/api-auth/update_profile/`,
+        url: `/user/update-profile`,
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

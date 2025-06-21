@@ -14,6 +14,7 @@ import {
 } from "@/redux/feature/settingAPI";
 import { toast } from "sonner";
 import Loading from "@/components/Loading";
+import { useRouter } from "next/navigation";
 
 export default function PersonalInformationEditPage() {
   const [formData, setFormData] = useState({
@@ -25,6 +26,8 @@ export default function PersonalInformationEditPage() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avater, setAvater] = useState<string | File | null>(null);
+
+  const router = useRouter();
 
   const { data: userProfile, isLoading } = useGetProfileQuery("");
   const [updateProfile] = useUpdateProfileMutation();
@@ -65,23 +68,36 @@ export default function PersonalInformationEditPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!formData.name || !formData.phone) {
+      toast.error("Name and phone are required!");
+      return;
+    }
+
     const formDataHere = new FormData();
     formDataHere.append("name", formData.name);
     formDataHere.append("phone", formData.phone);
 
-    if (avater) {
-      formDataHere.append("profile_pic", avater);
+    if (avater instanceof File) {
+      formDataHere.append("image", avater);
+    } else if (avater) {
+      toast.error("Failed to update profile!");
     }
 
     try {
       const res = await updateProfile(formDataHere);
-      if (res?.data?.status === "success") {
+
+      // Debug: Log full response
+      if (res?.data?.success === true) {
         toast.success("Profile updated successfully!");
+
+        // Redirect to the desired route
+        router.push("/setting/personal-information");
       } else {
         toast.error("Failed to update profile!");
+        console.error("API Error:", res?.error);
       }
     } catch (error) {
-      toast.error("An error occurred while updating the profile!");
+      toast.error("Failed to update profile!");
       console.error(error);
     }
   };
