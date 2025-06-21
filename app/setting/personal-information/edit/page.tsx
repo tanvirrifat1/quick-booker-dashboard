@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,36 +8,33 @@ import { ArrowLeft, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import {
   useGetProfileQuery,
   useUpdateProfileMutation,
 } from "@/redux/feature/settingAPI";
 import { toast } from "sonner";
+import Loading from "@/components/Loading";
 
 export default function PersonalInformationEditPage() {
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
-    profileImage: "",
+    phone: "",
+    image: "",
   });
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avater, setAvater] = useState<string | File | null>(null);
 
-  const { data: userProfile, isLoading } = useGetProfileQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
-
+  const { data: userProfile, isLoading } = useGetProfileQuery("");
   const [updateProfile] = useUpdateProfileMutation();
 
   useEffect(() => {
-    if (userProfile) {
+    if (userProfile?.data) {
       setFormData({
-        name: userProfile?.full_name,
-        email: userProfile?.email,
-        profileImage: userProfile?.profile_pic,
+        name: userProfile.data.name || "",
+        phone: userProfile.data.phone || "",
+        image: userProfile.data.image || "",
       });
     }
   }, [userProfile]);
@@ -70,27 +66,32 @@ export default function PersonalInformationEditPage() {
     e.preventDefault();
 
     const formDataHere = new FormData();
-
-    formDataHere.append("full_name", formData.name);
-    formDataHere.append("email", formData.email);
+    formDataHere.append("name", formData.name);
+    formDataHere.append("phone", formData.phone);
 
     if (avater) {
       formDataHere.append("profile_pic", avater);
     }
 
-    const res = await updateProfile(formDataHere);
-
-    if (res?.data?.status === "success") {
-      toast.success("Profile updated successfully!");
-    }
-
-    if (res?.data?.status === "error") {
-      toast.error("Failed to update profile!");
+    try {
+      const res = await updateProfile(formDataHere);
+      if (res?.data?.status === "success") {
+        toast.success("Profile updated successfully!");
+      } else {
+        toast.error("Failed to update profile!");
+      }
+    } catch (error) {
+      toast.error("An error occurred while updating the profile!");
+      console.error(error);
     }
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
   }
 
   return (
@@ -104,7 +105,7 @@ export default function PersonalInformationEditPage() {
                 className="inline-flex items-center text-[#E6E6E6] hover:text-[#5CE1E6]"
               >
                 <ArrowLeft className="mr-2 h-6 w-6" />
-                <span className="text-2xl font-semibold ">
+                <span className="text-2xl font-semibold">
                   Personal Information Edit
                 </span>
               </Link>
@@ -121,7 +122,7 @@ export default function PersonalInformationEditPage() {
                     <div className="w-32 h-32 rounded-full overflow-hidden relative">
                       {profileImage ? (
                         <Image
-                          src={`${profileImage}` || "/public/user.jpg"}
+                          src={profileImage}
                           alt="Profile"
                           fill
                           className="object-cover"
@@ -129,8 +130,8 @@ export default function PersonalInformationEditPage() {
                       ) : (
                         <Image
                           src={
-                            `${process.env.NEXT_PUBLIC_API_URL}${userProfile?.profile_pic}` ||
-                            "/public/user.jpg"
+                            process.env.NEXT_PUBLIC_IMAGE_URL +
+                            userProfile?.data?.image
                           }
                           alt="Profile"
                           fill
@@ -144,7 +145,7 @@ export default function PersonalInformationEditPage() {
                     <input
                       type="file"
                       ref={fileInputRef}
-                      className="hidden "
+                      className="hidden"
                       accept="image/*"
                       onChange={handleImageChange}
                     />
@@ -215,10 +216,10 @@ export default function PersonalInformationEditPage() {
                       </svg>
                     </Label>
                     <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
                       onChange={handleChange}
                       className="w-full h-12 text-lg text-white bg-transparent pl-12"
                     />

@@ -31,8 +31,6 @@ export default function CourtPage() {
     }
   };
 
-  console.log(courts);
-
   return (
     <div>
       {/* Create Court Button */}
@@ -91,6 +89,9 @@ export default function CourtPage() {
                     </p>
                     <p className="text-sm text-gray-600 mb-2">
                       Slot Duration: {court.slotTime}
+                    </p>
+                    <p className="text-sm text-gray-600 mb-2 font-semibold">
+                      Status: {court.isDeleted ? "Deleted" : "Active"}
                     </p>
                     {/* Available Slots Mapping */}
                     <div className="text-sm text-gray-600">

@@ -3,9 +3,32 @@ import baseApi from "../api/baseAPI";
 
 const settingAPI = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    updateProfile: builder.mutation({
+      query: (data) => ({
+        url: `/api-auth/update_profile/`,
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: data,
+      }),
+      invalidatesTags: ["Profile"],
+    }),
+
+    getProfile: builder.query({
+      query: () => ({
+        url: `/user/profile`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        method: "GET",
+        providesTags: ["Profile"],
+      }),
+    }),
+
     updatePassword: builder.mutation({
       query: (data) => ({
-        url: `/auth/change-password`,
+        url: `auth/change-password`,
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -102,13 +125,12 @@ const settingAPI = baseApi.injectEndpoints({
 });
 
 export const {
+  useUpdateProfileMutation,
   useUpdatePasswordMutation,
   useSetTermsAndConditionsMutation,
   useGetPrivacyPolicyQuery,
   useSetPrivacyPolicyMutation,
   useGetAboutUsQuery,
   useUpdateAboutUsMutation,
-  useForgetPasswordMutation,
-  useVerifyEmailMutation,
-  useResetPasswordMutation,
+  useGetProfileQuery,
 } = settingAPI;
