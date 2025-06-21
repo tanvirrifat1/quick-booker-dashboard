@@ -17,10 +17,10 @@ const settingAPI = baseApi.injectEndpoints({
 
     updatePassword: builder.mutation({
       query: (data) => ({
-        url: `/api-auth/change_password/`,
+        url: `/auth/change-password`,
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: data,
       }),

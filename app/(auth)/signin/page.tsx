@@ -76,16 +76,21 @@ export default function SignInPage() {
         password: formData.password,
       }).unwrap();
 
-      if (res?.success) {
+      console.log(res);
+
+      if (res?.success === true) {
         localStorage.setItem("accessToken", res?.data?.accessToken);
         await saveTokens(res?.data?.accessToken);
         router.push("/");
       } else {
         setErrors({ submit: "Invalid credentials. Please try again." });
       }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      setErrors({ submit: "Invalid credentials. Please try again." });
+    } catch (error: any) {
+      const errorMessage =
+        error?.data?.errorMessages?.[0]?.message ||
+        error?.data?.message ||
+        "An error occurred. Please try again.";
+      setErrors({ submit: errorMessage });
     } finally {
       setIsSubmitting(false);
     }

@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useUpdatePasswordMutation } from "@/redux/feature/settingAPI";
+
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useUpdatePasswordMutation } from "@/redux/feature/settingAPI";
 
 export default function ChangePasswordPage() {
   const [formData, setFormData] = useState({
@@ -52,12 +53,12 @@ export default function ChangePasswordPage() {
     }
 
     const res = await updatePassword({
-      old_password: formData.currentPassword,
-      new_password: formData.newPassword,
-      confirm_password: formData.confirmPassword,
+      currentPassword: formData.currentPassword,
+      newPassword: formData.newPassword,
+      confirmPassword: formData.confirmPassword,
     }).unwrap();
 
-    if (res.status === "success") {
+    if (res?.success === true) {
       toast.success("Password updated successfully");
       router.push("/setting");
     } else {
@@ -73,17 +74,17 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className='flex min-h-screen bg-background2'>
-      <div className='flex-1 w-full'>
-        <main className='w-full p-4 md:p-6'>
-          <div className='max-w-3xl mx-auto'>
-            <div className='mb-6'>
+    <div className="flex min-h-screen bg-background2">
+      <div className="flex-1 w-full ">
+        <main className="w-full p-4 md:p-6 ">
+          <div className="max-w-3xl mx-auto ">
+            <div className="mb-6">
               <Link
-                href='/setting'
-                className='inline-flex items-center text-primary'
+                href="/setting"
+                className="inline-flex items-center text-primary"
               >
-                <ArrowLeft className='mr-2 h-6 w-6' />
-                <span className='text-2xl text-primary font-semibold'>
+                <ArrowLeft className="mr-2 h-6 w-6" />
+                <span className="text-2xl text-primary font-semibold">
                   Change Password
                 </span>
               </Link>
@@ -91,34 +92,34 @@ export default function ChangePasswordPage() {
 
             <form
               onSubmit={handleSubmit}
-              className='space-y-4 bg-[#FFF] rounded-xl p-6'
+              className="space-y-4 bg-gradient-to-br from-blue-600 via-blue-500 to-teal-400 text-white rounded-xl p-6"
             >
               {error && (
-                <Alert variant='destructive'>
-                  <AlertCircle className='h-6 w-6' />
+                <Alert variant="destructive">
+                  <AlertCircle className="h-6 w-6" />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
 
-              <div className='space-y-2 rounded-xl p-6'>
+              <div className="space-y-2 rounded-xl p-6">
                 <Label
-                  htmlFor='currentPassword'
-                  className='text-lg font-medium text-[#101010]'
+                  htmlFor="currentPassword"
+                  className="text-lg font-medium text-white"
                 >
                   Current Password
                 </Label>
-                <div className='relative'>
+                <div className="relative">
                   <Input
-                    id='currentPassword'
-                    name='currentPassword'
+                    id="currentPassword"
+                    name="currentPassword"
                     type={showCurrentPassword ? "text" : "password"}
                     value={formData.currentPassword}
                     onChange={handleChange}
-                    className='text-lg font-medium text-[#101010] bg-transparent border'
+                    className="text-lg font-medium text-white bg-transparent border"
                   />
                   <button
-                    type='button'
-                    className='absolute right-3 top-1/2 -translate-y-1/2 text-[#101010]'
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                   >
                     {showCurrentPassword ? (
@@ -130,25 +131,25 @@ export default function ChangePasswordPage() {
                 </div>
               </div>
 
-              <div className='space-y-2 rounded-xl p-6'>
+              <div className="space-y-2 rounded-xl p-6">
                 <Label
-                  htmlFor='newPassword'
-                  className='text-lg font-medium text-[#101010]'
+                  htmlFor="newPassword"
+                  className="text-lg font-medium text-white"
                 >
                   New Password
                 </Label>
-                <div className='relative'>
+                <div className="relative">
                   <Input
-                    id='newPassword'
-                    name='newPassword'
+                    id="newPassword"
+                    name="newPassword"
                     type={showNewPassword ? "text" : "password"}
                     value={formData.newPassword}
                     onChange={handleChange}
-                    className='text-lg font-medium text-[#101010] bg-transparent border'
+                    className="text-lg font-medium text-white bg-transparent border"
                   />
                   <button
-                    type='button'
-                    className='absolute right-3 top-1/2 -translate-y-1/2 text-[#101010]'
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white"
                     onClick={() => setShowNewPassword(!showNewPassword)}
                   >
                     {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -156,25 +157,25 @@ export default function ChangePasswordPage() {
                 </div>
               </div>
 
-              <div className='space-y-2 rounded-xl p-6'>
+              <div className="space-y-2 rounded-xl p-6">
                 <Label
-                  htmlFor='confirmPassword'
-                  className='text-lg font-medium text-[#101010]'
+                  htmlFor="confirmPassword"
+                  className="text-lg font-medium text-white"
                 >
                   Confirm New Password
                 </Label>
-                <div className='relative'>
+                <div className="relative">
                   <Input
-                    id='confirmPassword'
-                    name='confirmPassword'
+                    id="confirmPassword"
+                    name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className='text-lg font-medium text-[#101010] bg-transparent border'
+                    className="text-lg font-medium text-white bg-transparent border"
                   />
                   <button
-                    type='button'
-                    className='absolute right-3 top-1/2 -translate-y-1/2 text-lg font-medium text-[#101010]'
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
@@ -186,10 +187,10 @@ export default function ChangePasswordPage() {
                 </div>
               </div>
 
-              <div className='pt-2 flex items-center justify-end'>
+              <div className="pt-2 flex items-center justify-end">
                 <Button
-                  type='submit'
-                  className='bg-button text-lg font-semibold text-[#fff]'
+                  type="submit"
+                  className="bg-button text-lg font-semibold text-[#fff]"
                 >
                   Update Password
                 </Button>
