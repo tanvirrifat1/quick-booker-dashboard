@@ -62,13 +62,13 @@ export default function CourtPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courts?.map((court: any) => (
             <div
-              key={court.id}
+              key={court._id}
               className="bg-white rounded-2xl shadow-lg overflow-hidden"
             >
               {/* Image Section */}
               <div className="relative h-48">
                 <Image
-                  src={process.env.NEXT_PUBLIC_IMAGE_URL + court.image} // Fallback image
+                  src={process.env.NEXT_PUBLIC_IMAGE_URL + court.image}
                   alt={`Image of ${court.name}`}
                   fill
                   className="object-cover"
@@ -86,9 +86,32 @@ export default function CourtPage() {
                     <p className="text-lg font-bold text-gray-900 mb-1">
                       ${court.price}
                     </p>
-                    <p className="text-sm text-gray-600">
-                      Available: {court.availability}
+                    <p className="text-sm text-gray-600 mb-2">
+                      Address: {court.address}
                     </p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Slot Duration: {court.slotTime}
+                    </p>
+                    {/* Available Slots Mapping */}
+                    <div className="text-sm text-gray-600">
+                      <p className="font-semibold">Available Slots:</p>
+                      {court.availableSlots &&
+                      court.availableSlots.length > 0 ? (
+                        <ul className="list-disc pl-5">
+                          {court.availableSlots.map((slot: any) => (
+                            <li key={slot._id}>
+                              <span className="font-medium">{slot.date}: </span>
+                              {slot.slots
+                                .filter((s: any) => s.isAvailable)
+                                .map((s: any) => s.time)
+                                .join(", ") || "No available times"}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No available slots.</p>
+                      )}
+                    </div>
                   </div>
 
                   {/* Action Buttons */}
@@ -98,7 +121,7 @@ export default function CourtPage() {
                       size="sm"
                       className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1 h-auto font-medium"
                     >
-                      <Link href={`/court/${court.id}`}>Edit</Link>
+                      <Link href={`/court/${court._id}`}>Edit</Link>
                     </Button>
                     <Button
                       variant="ghost"
