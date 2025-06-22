@@ -22,7 +22,23 @@ const courtAPI = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Court"],
     }),
+
+    addCourt: builder.mutation<any, any>({
+      query: (data) => ({
+        url: `/court/create-court`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Court"],
+    }),
   }),
 });
 
-export const { useGetAllCourtQuery, useDeleteCourtMutation } = courtAPI;
+export const {
+  useGetAllCourtQuery,
+  useDeleteCourtMutation,
+  useAddCourtMutation,
+} = courtAPI;

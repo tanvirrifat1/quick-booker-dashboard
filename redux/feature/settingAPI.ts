@@ -107,7 +107,6 @@ const settingAPI = baseApi.injectEndpoints({
         url: `/auth/reset-password`,
         method: "POST",
         body: data,
-
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -125,4 +124,7 @@ export const {
   useGetAboutUsQuery,
   useUpdateAboutUsMutation,
   useGetProfileQuery,
+  useForgetPasswordMutation,
+  useVerifyEmailMutation,
+  useResetPasswordMutation,
 } = settingAPI;

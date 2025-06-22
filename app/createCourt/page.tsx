@@ -12,6 +12,7 @@ import { Plus, X, MapPin, DollarSign, Clock, Calendar } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { useAddCourtMutation } from "@/redux/feature/courtAPI";
 
 interface TimeSlot {
   time: string;
@@ -44,6 +45,8 @@ export default function VenueForm() {
   const [currentDate, setCurrentDate] = useState("");
   const [currentTime, setCurrentTime] = useState("");
   const [imagePreview, setImagePreview] = useState("");
+
+  const [addCourt] = useAddCourtMutation();
 
   const handleInputChange = (
     field: keyof VenueData,
@@ -172,37 +175,43 @@ export default function VenueForm() {
       return;
     }
 
-    const submitData = {
-      ...formData,
-      availableSlots: formData.availableSlots.map((slot) => ({
-        date: slot.date,
-        slots: slot.slots.map((timeSlot) => ({
-          time: formatTime(timeSlot.time),
-        })),
-      })),
-    };
+    // Prepare FormData
+    const formDataToSubmit = new FormData();
 
-    // Log data without the full image base64 string for readability
-    console.log("Venue Data to Submit:", {
-      ...submitData,
-      image: submitData.image ?? null,
+    // Append basic fields
+    formDataToSubmit.append("name", formData.name);
+    formDataToSubmit.append("price", formData.price.toString());
+    formDataToSubmit.append("address", formData.address);
+    formDataToSubmit.append("slotTime", formData.slotTime);
+
+    // Append image if it exists
+    if (formData.image) {
+      formDataToSubmit.append("image", formData.image);
+    }
+
+    // Append availableSlots as a JSON string or structured fields
+    formData.availableSlots.forEach((slot, dateIndex) => {
+      formDataToSubmit.append(`availableSlots[${dateIndex}][date]`, slot.date);
+      slot.slots.forEach((timeSlot, timeIndex) => {
+        formDataToSubmit.append(
+          `availableSlots[${dateIndex}][slots][${timeIndex}][time]`,
+          formatTime(timeSlot.time)
+        );
+      });
     });
 
-    try {
-      // Example API call (uncomment and configure as needed)
-      /*
-      const response = await fetch('/api/venues', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submitData),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to submit venue data');
-      }
-      */
+    // Log FormData entries for debugging (cannot log FormData directly)
+    console.log("Venue Data to Submit:");
+    for (const [key, value] of formDataToSubmit.entries()) {
+      console.log(`${key}:`, value);
+    }
 
+    try {
+      const { data } = await addCourt(formDataToSubmit).unwrap(); // Use .unwrap() for RTK Query to handle errors
+      console.log("Response data:", data);
       toast.success("Venue created successfully!");
 
+      // Reset form
       setFormData({
         name: "",
         image: "",
@@ -216,7 +225,7 @@ export default function VenueForm() {
       setCurrentTime("");
     } catch (error) {
       console.error("Error creating venue:", error);
-      alert("Error creating venue. Please try again.");
+      toast.error("Error creating venue. Please try again.");
     }
   };
 
@@ -442,35 +451,6 @@ export default function VenueForm() {
           )}
         </CardContent>
       </Card>
-
-      {formData.name && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Preview Data</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <pre className="bg-gray-50 p-4 rounded-lg text-sm overflow-auto">
-              {JSON.stringify(
-                {
-                  name: formData.name,
-                  image: formData.image ? "[Base64 Image Data]" : "",
-                  price: formData.price,
-                  address: formData.address,
-                  slotTime: formData.slotTime,
-                  availableSlots: formData.availableSlots.map((slot) => ({
-                    date: slot.date,
-                    slots: slot.slots.map((timeSlot) => ({
-                      time: formatTime(timeSlot.time),
-                    })),
-                  })),
-                },
-                null,
-                2
-              )}
-            </pre>
-          </CardContent>
-        </Card>
-      )}
 
       <Card>
         <div

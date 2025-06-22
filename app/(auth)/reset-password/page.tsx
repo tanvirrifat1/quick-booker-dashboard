@@ -88,7 +88,6 @@ export default function CreatePasswordPage() {
         setErrors({ submit: res?.message || "Failed to update password" });
       }
     } catch (error) {
-      console.error("Error updating password:", error);
       setErrors({ submit: "An error occurred. Please try again." });
     } finally {
       setIsSubmitting(false);
