@@ -6,10 +6,16 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useGetUserProfileQuery } from "@/redux/feature/userAPI";
+import {
+  useGetNotificationCountQuery,
+  useGetNotificationsQuery,
+} from "@/redux/feature/notificationAPI";
 
 export default function DashboardHeader() {
   const pathname = usePathname();
   const { data: userProfile } = useGetUserProfileQuery("");
+
+  const { data } = useGetNotificationCountQuery();
 
   if (
     pathname === "/signin" ||
@@ -35,10 +41,24 @@ export default function DashboardHeader() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Link href="/notifications" className="relative text-white">
-          <Bell className="h-6 w-6" />
-          <span className="absolute right-1 top-1 flex h-2 w-2 rounded-full bg-red-500"></span>
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/notifications" className="relative text-white">
+            {data?.data ? (
+              <span
+                className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white"
+                aria-label={`${data.data} new notifications`}
+              >
+                {data.data}
+              </span>
+            ) : (
+              <span
+                className="absolute -right-1 -top-1 flex h-2 w-2 rounded-full bg-red-500"
+                aria-hidden="true"
+              />
+            )}
+            <Bell className="h-6 w-6" />
+          </Link>
+        </div>
 
         <div className="flex items-center gap-2">
           <Link href="/setting/personal-information">

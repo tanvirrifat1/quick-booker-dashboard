@@ -8,11 +8,7 @@ export const baseApi = createApi({
 
   tagTypes: [
     "User",
-    "Session",
-    "Story",
-    "Blog",
-    "MsPost",
-    "Donation",
+    "Notification",
     "Profile",
     "Privacy",
     "AboutUs",

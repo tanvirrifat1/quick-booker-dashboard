@@ -7,14 +7,14 @@ interface NotificationProps {
   notification: {
     id: number;
     type: string;
-    message: string;
-    timestamp: string;
-    isRead: boolean;
+    text: string;
+    createdAt: string;
+    read: boolean;
   };
 }
 
 export default function NotificationItem({ notification }: NotificationProps) {
-  const [isRead, setIsRead] = useState(notification.isRead);
+  const [isRead, setIsRead] = useState(notification.read);
 
   const handleClick = () => {
     setIsRead(true);
@@ -23,11 +23,15 @@ export default function NotificationItem({ notification }: NotificationProps) {
   return (
     <div
       className={`flex items-start p-4 gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${
-        notification.type === "payment" ? "bg-blue-600 text-white" : ""
+        notification.type === "payment"
+          ? "bg-blue-600 text-white"
+          : isRead
+          ? "bg-blue-300 text-white"
+          : ""
       }`}
       onClick={handleClick}
     >
-      <div className='flex-shrink-0 mt-1'>
+      <div className="flex-shrink-0 mt-1">
         <div
           className={`rounded-full p-2 ${
             notification.type === "payment"
@@ -42,20 +46,20 @@ export default function NotificationItem({ notification }: NotificationProps) {
           />
         </div>
       </div>
-      <div className='flex-1'>
+      <div className="flex-1">
         <p
           className={`${
             notification.type === "payment" ? "text-white" : "text-gray-800"
           }`}
         >
-          {notification.message}
+          {notification.text}
         </p>
         <p
           className={`text-sm ${
             notification.type === "payment" ? "text-white/80" : "text-gray-500"
           }`}
         >
-          {notification.timestamp}
+          {notification.createdAt}
         </p>
       </div>
     </div>

@@ -1,141 +1,185 @@
-// "use client";
-
-// import { useGetNotificationsQuery } from "@/redux/feature/notificationAPI";
-// import { ArrowLeft, Bell, BookCheck } from "lucide-react";
-// import Link from "next/link";
-// import { useState, useEffect } from "react";
-
-// type INotification = {
-//   id: string;
-//   type: "payment" | "user_registered";
-//   message: string;
-//   timestamp: string;
-//   read: boolean;
-//   is_read?: boolean;
-//   created_at: string;
-// };
-
-// export default function NotificationsList() {
-//   const [loading, setLoading] = useState(true);
-
-//   const { data: notificationsData, isLoading } = useGetNotificationsQuery(
-//     undefined,
-//     {
-//       refetchOnMountOrArgChange: true,
-//     }
-//   );
-
-//   useEffect(() => {
-//     // Simulate fetching notifications from an API
-//     const fetchNotifications = async () => {
-//       // In a real app, this would be an API call
-//       await new Promise((resolve) => setTimeout(resolve, 500));
-
-//       setLoading(false);
-//     };
-
-//     fetchNotifications();
-//   }, []);
-
-//   if (loading) {
-//     return (
-//       <div className='flex justify-center items-center py-20'>
-//         <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-200'></div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className='px-5'>
-//       <div className='min-h-[800px] bg-[#333333] text-white rounded-2xl'>
-//         <div className='p-4'>
-//           <header className='flex items-center mb-6'>
-//             <Link
-//               href='/'
-//               className='text-[#E6E6E6] hover:text-white transition-colors'
-//             >
-//               <ArrowLeft className='w-6 h-6' />
-//             </Link>
-//             <h1 className='ml-4 text-xl font-medium text-[#E6E6E6]'>
-//               Notifications
-//             </h1>
-//           </header>
-
-//           <div className='max-w-2xl mx-auto flex items-center justify-evenly'>
-//             <Link
-//               href='/notifications/send-notification'
-//               className='border border-[#E6E6E6] rounded-full px-5 py-3'
-//             >
-//               Send Notification to Users
-//             </Link>
-
-//             <Link
-//               href='/notifications/all-notification'
-//               className='border border-[#E6E6E6] rounded-full px-5 py-3'
-//             >
-//               See all notifications
-//             </Link>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
+"use client";
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import NotificationItem from "@/components/notification-item";
+import {
+  useDeleteNotificationMutation,
+  useGetNotificationsQuery,
+  useUpdateNotificationMutation,
+} from "@/redux/feature/notificationAPI";
+import { useState } from "react";
+import Loading from "@/components/Loading";
+import { toast } from "sonner";
 
 export default function NotificationsPage() {
-  // Sample notification data here
-  const notifications = [
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const notificationsPerPage = 10; // Matches the limit in the API request
+
+  const { data, isLoading, isError, error, refetch } = useGetNotificationsQuery(
     {
-      id: 1,
-      type: "payment",
-      message: "You have received $500 from John Doe",
-      timestamp: "Fri, 12:30pm",
-      isRead: false,
-    },
-    {
-      id: 2,
-      type: "user",
-      message: "New User registered.",
-      timestamp: "Fri, 12:30pm",
-      isRead: true,
-    },
-    {
-      id: 3,
-      type: "user",
-      message: "New User registered.",
-      timestamp: "Fri, 12:30pm",
-      isRead: true,
-    },
-    {
-      id: 4,
-      type: "user",
-      message: "New User registered.",
-      timestamp: "Fri, 12:30pm",
-      isRead: true,
-    },
-  ];
+      page: currentPage,
+      limit: notificationsPerPage,
+    }
+  );
+
+  const [updateNotification] = useUpdateNotificationMutation();
+  const [deleteNotification] = useDeleteNotificationMutation();
+
+  // Extract notifications and metadata from API response
+  const notifications = data?.data?.result || [];
+  const totalNotifications = data?.data?.meta?.total || 0;
+  const totalPages = Math.ceil(totalNotifications / notificationsPerPage);
+
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Handle previous and next buttons
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const res = await updateNotification("").unwrap();
+
+      if (res?.success === true) {
+        toast.success("Notification read successfully!");
+      }
+      refetch();
+    } catch (error) {
+      toast.error("Error updating notification");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const res = await deleteNotification("").unwrap();
+
+      if (res?.success === true) {
+        toast.success("Notification deleted successfully!");
+      }
+
+      refetch();
+    } catch (error) {
+      toast.error("Error updating notification");
+    }
+  };
 
   return (
-    <div className='container mx-auto bg-white min-h-[80vh] rounded-lg'>
-      <header className='p-4 border-b'>
-        <div className='flex items-center'>
-          <Link href='/' className='mr-4'>
-            <ArrowLeft className='h-5 w-5' />
-            <span className='sr-only'>Back</span>
-          </Link>
-          <h1 className='text-xl font-medium'>Notifications</h1>
+    <div className="container mx-auto bg-white min-h-[80vh] rounded-lg">
+      <header className="p-4 border-b">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Link href="/" className="mr-4">
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Back</span>
+            </Link>
+            <div>
+              <h1 className="text-xl font-medium">Notifications</h1>
+              <p className="text-sm text-gray-500 ">
+                You have {totalNotifications} notifications
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <div>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600"
+              >
+                Delete
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
+              >
+                Read
+              </button>
+            </div>
+          </div>
         </div>
       </header>
 
-      <div className='divide-y'>
-        {notifications.map((notification) => (
-          <NotificationItem key={notification.id} notification={notification} />
-        ))}
+      <div className="divide-y">
+        {isLoading ? (
+          <p>
+            <Loading />
+          </p>
+        ) : isError ? (
+          <p className="text-red-500">
+            Error loading notifications: {error?.toString() || "Unknown error"}
+          </p>
+        ) : notifications.length > 0 ? (
+          notifications.map((notification: any) => (
+            <NotificationItem
+              key={notification._id} // Use _id from the API response
+              notification={notification}
+            />
+          ))
+        ) : (
+          <p className="min-h-screen flex items-center justify-center text-3xl text-red-600">
+            No notifications available.
+          </p>
+        )}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center p-4">
+          <button
+            onClick={handlePrevious}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded-md ${
+              currentPage === 1
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
+          >
+            Previous
+          </button>
+          <div className="flex space-x-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => handlePageChange(index + 1)}
+                className={`px-3 py-1 rounded-md ${
+                  currentPage === index + 1
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={handleNext}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 rounded-md ${
+              currentPage === totalPages
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
