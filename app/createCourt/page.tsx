@@ -13,6 +13,7 @@ import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useAddCourtMutation } from "@/redux/feature/courtAPI";
+import { useRouter } from "next/navigation";
 
 interface TimeSlot {
   time: string;
@@ -45,6 +46,8 @@ export default function VenueForm() {
   const [currentDate, setCurrentDate] = useState("");
   const [currentTime, setCurrentTime] = useState("");
   const [imagePreview, setImagePreview] = useState("");
+
+  const router = useRouter();
 
   const [addCourt] = useAddCourtMutation();
 
@@ -201,15 +204,19 @@ export default function VenueForm() {
     });
 
     // Log FormData entries for debugging (cannot log FormData directly)
-    console.log("Venue Data to Submit:");
+
     for (const [key, value] of formDataToSubmit.entries()) {
-      console.log(`${key}:`, value);
+      console.log(`${key}: ${value}`);
     }
 
     try {
       const { data } = await addCourt(formDataToSubmit).unwrap(); // Use .unwrap() for RTK Query to handle errors
-      console.log("Response data:", data);
+
       toast.success("Venue created successfully!");
+
+      if (data) {
+        router.push("/court");
+      }
 
       // Reset form
       setFormData({
