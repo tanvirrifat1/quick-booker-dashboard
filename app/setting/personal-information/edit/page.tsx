@@ -234,7 +234,7 @@ export default function PersonalInformationEditPage() {
                     <Input
                       id="phone"
                       name="phone"
-                      type="tel"
+                      type="number"
                       value={formData.phone}
                       onChange={handleChange}
                       className="w-full h-12 text-lg text-white bg-transparent pl-12"

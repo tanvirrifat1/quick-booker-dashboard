@@ -1,7 +1,8 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,10 @@ import { Plus, X, MapPin, DollarSign, Clock, Calendar } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import Link from "next/link";
+import {
+  useGetSingleCourtQuery,
+  useUpdateCourtMutation,
+} from "@/redux/feature/courtAPI";
 
 interface TimeSlot {
   time: string;
@@ -24,7 +29,7 @@ interface AvailableSlot {
 
 interface VenueData {
   name: string;
-  image: string;
+  image: File | string | null;
   price: number;
   address: string;
   slotTime: string;
@@ -32,9 +37,19 @@ interface VenueData {
 }
 
 export default function VenueForm() {
+  const params = useParams();
+  const id = params.id as string;
+
+  const router = useRouter();
+
+  const { data, isLoading, error, refetch } = useGetSingleCourtQuery(id, {
+    skip: !id,
+  });
+  const [updateCourt] = useUpdateCourtMutation();
+
   const [formData, setFormData] = useState<VenueData>({
     name: "",
-    image: "",
+    image: null,
     price: 0,
     address: "",
     slotTime: "",
@@ -43,11 +58,38 @@ export default function VenueForm() {
 
   const [currentDate, setCurrentDate] = useState("");
   const [currentTime, setCurrentTime] = useState("");
-  const [imagePreview, setImagePreview] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState<File | null>(null);
+
+  // Prepopulate form with fetched data
+  useEffect(() => {
+    if (data?.data) {
+      const courtData = data.data;
+      setFormData({
+        name: courtData.name || "",
+        image: courtData.image || null,
+        price: courtData.price || 0,
+        address: courtData.address || "",
+        slotTime: courtData.slotTime || "",
+        availableSlots:
+          courtData.availableSlots?.map((slot: any) => ({
+            date: slot.date,
+            slots: slot.slots.map((timeSlot: any) => ({
+              time: timeSlot.time,
+            })),
+          })) || [],
+      });
+      setImagePreview(
+        courtData.image
+          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${courtData.image}`
+          : null
+      );
+    }
+  }, [data]);
 
   const handleInputChange = (
     field: keyof VenueData,
-    value: string | number
+    value: string | number | File | null
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -55,22 +97,15 @@ export default function VenueForm() {
     }));
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file: any = event.target.files?.[0];
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
-        alert("Only JPEG, PNG, and GIF images are allowed");
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Image size must be less than 5MB");
-        return;
-      }
-      handleInputChange("image", file);
+      setAvatar(file);
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setImagePreview(result);
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setImagePreview(event.target.result as string);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -156,67 +191,49 @@ export default function VenueForm() {
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
-  const handleSubmit = async () => {
-    if (
-      !formData.name ||
-      !formData.address ||
-      !formData.price ||
-      !formData.slotTime
-    ) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
-    if (formData.availableSlots.length === 0) {
-      toast.error("Please add at least one available time slot");
-      return;
-    }
-
-    const submitData = {
-      ...formData,
-      availableSlots: formData.availableSlots.map((slot) => ({
-        date: slot.date,
-        slots: slot.slots.map((timeSlot) => ({
-          time: formatTime(timeSlot.time),
-        })),
-      })),
-    };
-
-    // Log data without the full image base64 string for readability
-    console.log("Venue Data to Submit:", {
-      ...submitData,
-      image: submitData.image ?? null,
-    });
-
+  const handleSubmit = async (): Promise<void> => {
     try {
-      // Example API call (uncomment and configure as needed)
-      /*
-      const response = await fetch('/api/venues', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submitData),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to submit venue data');
+      if (
+        !formData.name?.trim() ||
+        !formData.address?.trim() ||
+        formData.price == null ||
+        !formData.slotTime?.trim() ||
+        formData.availableSlots.length === 0
+      ) {
+        toast.error("Please fill in all required fields");
+        return;
       }
-      */
 
-      toast.success("Venue created successfully!");
+      const formattedSlots = formData.availableSlots.map((s) => ({
+        date: s.date,
+        slots: s.slots.map((t) => ({ time: formatTime(t.time) })),
+      }));
 
-      setFormData({
-        name: "",
-        image: "",
-        price: 0,
-        address: "",
-        slotTime: "",
-        availableSlots: [],
-      });
-      setImagePreview("");
-      setCurrentDate("");
-      setCurrentTime("");
-    } catch (error) {
-      console.error("Error creating venue:", error);
-      alert("Error creating venue. Please try again.");
+      const payload = {
+        name: formData.name.trim(),
+        price: formData.price,
+        address: formData.address.trim(),
+        slotTime: formData.slotTime,
+        availableSlots: formattedSlots,
+      };
+
+      const fd = new FormData();
+      fd.append("data", JSON.stringify(payload));
+
+      if (avatar instanceof File) {
+        fd.append("image", avatar, avatar.name);
+      }
+
+      const res = await updateCourt({ id, data: fd }).unwrap();
+
+      if (res?.success) {
+        toast.success("Court updated successfully");
+        router.push("/court");
+        refetch();
+      } else toast.error("Failed to update court");
+    } catch (err) {
+      console.error("Error updating court:", err);
+      toast.error("An error occurred while updating the court");
     }
   };
 
@@ -227,10 +244,17 @@ export default function VenueForm() {
     );
   };
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error || !data) {
+    console.error("Error fetching court data:", error);
+    return <div>Error or no data found</div>;
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <Toaster />
       <Card className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white">
-        <CardHeader className="flex flex-row ">
+        <CardHeader className="flex flex-row">
           <Link href="/court">
             <p className="text-sm font-medium">
               <IoMdArrowRoundBack className="h-6 w-6 mt-2 mr-2" />
@@ -254,6 +278,7 @@ export default function VenueForm() {
               <Input
                 id="name"
                 placeholder="Enter venue name"
+                className="text-black"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
               />
@@ -266,7 +291,7 @@ export default function VenueForm() {
                   id="price"
                   type="number"
                   placeholder="0"
-                  className="pl-10"
+                  className="pl-10 text-black"
                   value={formData.price || ""}
                   onChange={(e) =>
                     handleInputChange(
@@ -310,19 +335,19 @@ export default function VenueForm() {
               id="image"
               type="file"
               accept="image/*"
-              onChange={handleImageUpload}
+              onChange={handleImageChange}
             />
             {imagePreview && (
               <div className="relative inline-block">
                 <img
-                  src={imagePreview || "/placeholder.svg"}
+                  src={imagePreview}
                   alt="Venue preview"
                   className="mt-2 max-h-32 rounded-lg object-cover"
                 />
                 <Button
                   onClick={() => {
-                    setImagePreview("");
-                    setFormData((prev) => ({ ...prev, image: "" }));
+                    setImagePreview(null);
+                    handleInputChange("image", null);
                   }}
                   variant="ghost"
                   size="sm"
@@ -420,7 +445,7 @@ export default function VenueForm() {
                         className="flex items-center justify-between bg-gray-50 p-2 rounded"
                       >
                         <span className="text-sm font-medium">
-                          {formatTime(timeSlot.time)}
+                          {timeSlot.time}
                         </span>
                         <Button
                           onClick={() =>
@@ -442,44 +467,12 @@ export default function VenueForm() {
         </CardContent>
       </Card>
 
-      {formData.name && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Preview Data</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <pre className="bg-gray-50 p-4 rounded-lg text-sm overflow-auto">
-              {JSON.stringify(
-                {
-                  name: formData.name,
-                  image: formData.image ? "[Base64 Image Data]" : "",
-                  price: formData.price,
-                  address: formData.address,
-                  slotTime: formData.slotTime,
-                  availableSlots: formData.availableSlots.map((slot) => ({
-                    date: slot.date,
-                    slots: slot.slots.map((timeSlot) => ({
-                      time: formatTime(timeSlot.time),
-                    })),
-                  })),
-                },
-                null,
-                2
-              )}
-            </pre>
-          </CardContent>
-        </Card>
-      )}
-
       <Card>
-        <div
-          className="
-        flex flex-col items-center justify-center space-y-4"
-        >
+        <div className="flex flex-col items-center justify-center space-y-4">
           <CardContent className="pt-6">
             <button
               onClick={handleSubmit}
-              className="border h-10 rounded-md w-96  font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-teal-500 transition-colors"
+              className="border h-10 rounded-md w-96 font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-teal-500 transition-colors"
               disabled={
                 !formData.name ||
                 !formData.address ||
@@ -488,7 +481,7 @@ export default function VenueForm() {
                 formData.availableSlots.length === 0
               }
             >
-              Create Court
+              Update Court
             </button>
           </CardContent>
         </div>

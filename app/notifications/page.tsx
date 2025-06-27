@@ -125,7 +125,7 @@ export default function NotificationsPage() {
             Error loading notifications: {error?.toString() || "Unknown error"}
           </p>
         ) : notifications.length > 0 ? (
-          notifications.map((notification: any) => (
+          notifications?.map((notification: any) => (
             <NotificationItem
               key={notification._id} // Use _id from the API response
               notification={notification}

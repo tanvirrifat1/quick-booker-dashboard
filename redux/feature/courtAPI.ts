@@ -34,6 +34,28 @@ const courtAPI = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Court"],
     }),
+
+    updateCourt: builder.mutation<any, any>({
+      query: ({ id, data }) => ({
+        url: `/court/update-court/${id}`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Court"],
+    }),
+
+    getSingleCourt: builder.query<any, string>({
+      query: (id) => ({
+        url: `/court/get-courts-details/${id}`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -41,4 +63,6 @@ export const {
   useGetAllCourtQuery,
   useDeleteCourtMutation,
   useAddCourtMutation,
+  useUpdateCourtMutation,
+  useGetSingleCourtQuery,
 } = courtAPI;

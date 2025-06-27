@@ -6,10 +6,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useGetUserProfileQuery } from "@/redux/feature/userAPI";
-import {
-  useGetNotificationCountQuery,
-  useGetNotificationsQuery,
-} from "@/redux/feature/notificationAPI";
+import { useGetNotificationCountQuery } from "@/redux/feature/notificationAPI";
 
 export default function DashboardHeader() {
   const pathname = usePathname();

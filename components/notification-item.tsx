@@ -59,7 +59,7 @@ export default function NotificationItem({ notification }: NotificationProps) {
             notification.type === "payment" ? "text-white/80" : "text-gray-500"
           }`}
         >
-          {notification.createdAt}
+          {notification.createdAt.slice(0, 10)}
         </p>
       </div>
     </div>
