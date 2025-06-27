@@ -8,13 +8,14 @@ import { ArrowLeft, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  useGetProfileQuery,
-  useUpdateProfileMutation,
-} from "@/redux/feature/settingAPI";
+
 import { toast } from "sonner";
 import Loading from "@/components/Loading";
 import { useRouter } from "next/navigation";
+import {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+} from "@/redux/feature/userAPI";
 
 export default function PersonalInformationEditPage() {
   const [formData, setFormData] = useState({
@@ -91,6 +92,7 @@ export default function PersonalInformationEditPage() {
         toast.success("Profile updated successfully!");
 
         // Redirect to the desired route
+        refetch();
         router.push("/setting/personal-information");
       } else {
         toast.error("Failed to update profile!");
