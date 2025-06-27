@@ -41,9 +41,7 @@ export default function PrivacyPolicyPage() {
             </div>
 
             <div className="prose prose-sm max-w-none">
-              <h2 className="text-xl font-semibold mb-4">
-                Terms and Conditions
-              </h2>
+              <h2 className="text-xl font-semibold mb-4">Privacy Policy</h2>
             </div>
 
             <div>

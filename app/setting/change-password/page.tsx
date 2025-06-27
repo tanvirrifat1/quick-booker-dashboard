@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useUpdatePasswordMutation } from "@/redux/feature/settingAPI";
+import { useUpdatePasswordMutation } from "@/redux/feature/authAPI";
 
 export default function ChangePasswordPage() {
   const [formData, setFormData] = useState({

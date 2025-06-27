@@ -74,11 +74,9 @@ const EditPrivacyPolicy = () => {
 
   const handleSubmit = async () => {
     try {
-      // Send description to match the API response field
       const res = await setPrivacyPolicy({ description: content }).unwrap();
-
       if (res?.success === true) {
-        refetch(); // Refresh the data to reflect the update
+        await refetch(); // Wait for refetch to complete
         toast.success("Privacy Policy updated successfully!");
         router.push("/setting/privacy-policy");
       } else {

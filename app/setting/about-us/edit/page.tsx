@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 
 const EditAboutUs = () => {
   const [updateAboutUs, { isLoading: isUpdating }] = useUpdateAboutUsMutation();
-  const { data, isLoading } = useGetAboutUsQuery("");
+  const { data, isLoading, refetch } = useGetAboutUsQuery("");
   const quillRef = useRef<any>(null); // To store Quill instance
   const editorRef = useRef(null); // To reference the editor DOM element
 
@@ -58,6 +58,7 @@ const EditAboutUs = () => {
 
         toast.success("About Us updated successfully!");
         router.push("/setting/about-us");
+        refetch();
       } catch (error) {
         console.error("Failed to update About Us:", error);
         alert("Failed to update About Us.");

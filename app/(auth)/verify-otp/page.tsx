@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 
 import logo from "@/public/banner.png";
-import { useVerifyEmailMutation } from "@/redux/feature/settingAPI";
+import { useVerifyEmailMutation } from "@/redux/feature/authAPI";
 import { useRouter } from "next/navigation";
 
 export default function VerifyOTP() {

@@ -6,8 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
 import logo from "@/public/banner.png";
-import { useResetPasswordMutation } from "@/redux/feature/settingAPI";
+
 import { useRouter } from "next/navigation";
+import { useResetPasswordMutation } from "@/redux/feature/authAPI";
 
 export default function CreatePasswordPage() {
   const [formData, setFormData] = useState({

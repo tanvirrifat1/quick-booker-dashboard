@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import logos from "@/public/banner.png";
-import { useForgetPasswordMutation } from "@/redux/feature/settingAPI";
+import { useForgetPasswordMutation } from "@/redux/feature/authAPI";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");

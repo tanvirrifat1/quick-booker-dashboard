@@ -3,31 +3,58 @@ import baseApi from "../api/baseAPI";
 
 const authAPI = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    updatePassword: builder.mutation({
+      query: (data) => ({
+        url: `auth/change-password`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: data,
+      }),
+      invalidatesTags: ["Auth"],
+    }),
+    forgetPassword: builder.mutation({
+      query: (data) => ({
+        url: `/auth/forgot-password`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auth"],
+    }),
+    verifyEmail: builder.mutation({
+      query: (data) => ({
+        url: `/auth/verify-email`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auth"],
+    }),
+    resetPassword: builder.mutation({
+      query: (data) => ({
+        url: `/auth/reset-password`,
+        method: "POST",
+        body: data,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }),
+      invalidatesTags: ["Auth"],
+    }),
     login: builder.mutation<any, any>({
-      query: (body) => ({
-        url: "/auth/login",
+      query: (data) => ({
+        url: `/auth/login`,
         method: "POST",
-        body,
-      }),
-    }),
-
-    sendOtp: builder.mutation<any, any>({
-      query: (body) => ({
-        url: "/api-auth/resend_code/",
-        method: "POST",
-        body,
-      }),
-    }),
-
-    verifyOtp: builder.mutation<any, any>({
-      query: (body) => ({
-        url: "/api-auth/verify_email/",
-        method: "POST",
-        body,
+        body: data,
       }),
     }),
   }),
 });
 
-export const { useLoginMutation, useSendOtpMutation, useVerifyOtpMutation } =
-  authAPI;
+export const {
+  useUpdatePasswordMutation,
+  useResetPasswordMutation,
+  useVerifyEmailMutation,
+  useForgetPasswordMutation,
+  useLoginMutation,
+} = authAPI;
